@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://xlr4pviuen0h"]
+
+[ext_resource type="Script" uid="uid://d17odu0y0qowv" path="res://scenes/main/ping_test.gd" id="1_fay6t"]
+
+[node name="Node3D" type="Node3D" unique_id=909738423]
+script = ExtResource("1_fay6t")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=844752462]
+
+[node name="Room" type="Node3D" parent="." unique_id=1260940751]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1163415082]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=215850748]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=1022697636]
+layout_mode = 2
+
+[node name="PingTestButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1328437476]
+layout_mode = 2
+
+[node name="ResponseLabel" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=771335175]
+layout_mode = 2
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=789024060]
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/PingTestButton" to="." method="_on_ping_test_button_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]

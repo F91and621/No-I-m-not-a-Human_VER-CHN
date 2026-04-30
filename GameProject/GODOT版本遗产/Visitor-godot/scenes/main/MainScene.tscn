@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://p3d40fli4jy5"]
+
+[ext_resource type="Script" uid="uid://cdw02hhxh1te8" path="res://scenes/main/MainScene.gd" id="1_o3rl4"]
+
+[sub_resource type="Environment" id="Environment_o3rl4"]
+background_mode = 2
+ambient_light_color = Color(0.14229196, 0.37728676, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_46xpt"]
+size = Vector3(10, 0.2, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o3rl4"]
+albedo_color = Color(0.53333336, 0.53333336, 0.53333336, 1)
+
+[node name="MainScene" type="Node3D" unique_id=456598863]
+script = ExtResource("1_o3rl4")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=893214697]
+environment = SubResource("Environment_o3rl4")
+
+[node name="Room" type="Node3D" parent="." unique_id=1937556781]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Room" unique_id=1691509402]
+mesh = SubResource("BoxMesh_46xpt")
+surface_material_override/0 = SubResource("StandardMaterial3D_o3rl4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Room" unique_id=361146548]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 0, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1530895781]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=366489156]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=888999979]
+layout_mode = 2
+
+[node name="PingTestButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1958378216]
+layout_mode = 2
+
+[node name="ResponseLabel" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=347378351]
+layout_mode = 2
+
+[node name="DayNightButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=384487637]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+text = "昼夜切换"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1687672515]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=377043326]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.25881904, 0, -0.25881904, 0.9659258, 0, 5, 10)
+current = true
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/PingTestButton" to="." method="_on_ping_test_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/DayNightButton" to="." method="_on_day_night_button_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
