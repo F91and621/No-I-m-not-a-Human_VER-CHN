@@ -1,3 +1,4 @@
+
 public class MapManager {
 
     // 10x10的简单测试地图（1=墙，0=空地）
