@@ -28,6 +28,7 @@ public class DailyRuleManager {
             activeSignsToday.add(ruleUnlockSequence.get(i));
         }
 
+
         System.out.println("今天可以检查 " + activeSignsToday.size() + " 个地方。");
     }
 
