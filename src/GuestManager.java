@@ -96,8 +96,6 @@ public class GuestManager {
                 "panic_girl_eyes",
                 "panic_girl_ears"
         ));
-        Guest collector = Guest.createCollector();
-        addGuest(collector);
     }
 
     public void addGuest(Guest guest) {

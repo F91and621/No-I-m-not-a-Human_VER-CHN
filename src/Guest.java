@@ -656,27 +656,6 @@ public class Guest {
         return panic_girl;
     }
 
-    public static Guest createCollector() {
-        Guest collector = new Guest("collector", "收集者");
-
-        collector.setIdentity(GuestIdentity.VISITOR);
-
-        DialogueNode start = new DialogueNode(
-                "start",
-                "我来收走一个人。",
-                "谁都可以。"
-        );
-
-        start.addOption(new DialogueOption("……", null, true));
-
-        collector.addDialogueNode(start);
-        collector.startDialogueNodeId = "start";
-
-        return collector;
-    }
-
-
-
 
 
 }
