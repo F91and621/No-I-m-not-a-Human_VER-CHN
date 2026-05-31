@@ -1,0 +1,9 @@
+public enum SceneType {
+    BEDROOM_NIGHT,
+    YARD_NIGHT,
+    BEDROOM_DAY,
+    HALLWAY_DAY,
+    KITCHEN_DAY,
+    STORAGE_DAY,
+    LIVING_ROOM_DAY
+}
