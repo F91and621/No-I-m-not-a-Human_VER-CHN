@@ -22,11 +22,12 @@ import javafx.scene.media.MediaView;
 public class VisitorGame extends GameEngine {
 
     private HashMap<String, GuestRoomPlacement> guestRoomPlacements;
+    private HashMap<String, GuestRoomPlacement> guestCorpseRoomPlacements;
 
     private static final int WINDOW_WIDTH = 1920;
     private static final int WINDOW_HEIGHT = 1080;
 
-    private boolean introVideoPlaying = true;
+    private boolean introVideoPlaying = false;
     private JFXPanel introVideoPanel;
     private MediaPlayer introMediaPlayer;
 
@@ -40,6 +41,10 @@ public class VisitorGame extends GameEngine {
     private SafeHouseManager safeHouseManager;
 
 
+    private HashMap<Integer, Image> morningTransitionImages;
+    private boolean morningTransitionActive = false;
+    private Image currentMorningTransitionImage = null;
+
 
     private HashMap<SceneType, Image> sceneImages;
     private HashMap<String, Image> characterImages;
@@ -51,6 +56,18 @@ public class VisitorGame extends GameEngine {
     private Image gunShootSpriteSheet;
     private Image[] gunIdleFrames;
     private Image[] gunShootFrames;
+
+    private Image toothSpriteSheet;
+    private Image[] toothSpriteFrames;
+    private int toothSpriteFrameIndex = 0;
+    private long lastToothSpriteFrameTime = 0L;
+    private boolean toothSpriteAnimationFinished = false;
+
+    private static final int TOOTH_SPRITE_FRAME_COUNT = 7;
+    private static final int TOOTH_SPRITE_FRAME_COLS = 3;
+    private static final int TOOTH_SPRITE_FRAME_W = 682;
+    private static final int TOOTH_SPRITE_FRAME_H = 232;
+    private static final long TOOTH_SPRITE_FRAME_INTERVAL = 100;
 
     private int gunIdleFrameIndex = 0;
     private int gunShootFrameIndex = 0;
@@ -146,6 +163,7 @@ public class VisitorGame extends GameEngine {
     private String currentInspectionImageKey;
 
 
+
     private ArrayList<String> nightVisitorQueue;
     private HashMap<String, String> outsideGuestImageKeys;
 
@@ -163,6 +181,7 @@ public class VisitorGame extends GameEngine {
     private static final String GUEST_WIDOW = "widow";
     private static final String GUEST_AUNTIE = "auntie";
     private static final String GUEST_PANIC_GIRL = "panic_girl";
+    private static final String GUEST_COLLECTOR = "collector";
 
 
     private static final String PORTRAIT_NEIGHBOR = "portrait_neighbor";
@@ -185,6 +204,8 @@ public class VisitorGame extends GameEngine {
     private static final String CHARACTER_WIDOW_OUTSIDE = "widow_outside";
     private static final String CHARACTER_AUNTIE_OUTSIDE = "auntie_outside";
     private static final String CHARACTER_PANIC_GIRL_OUTSIDE = "panic_girl_outside";
+    private static final String CHARACTER_COLLECTOR_OUTSIDE = "collector_outside";
+
 
 
     private static final String CHARACTER_FIREFIGHTER_DAY = "firefighter_day";
@@ -229,6 +250,16 @@ public class VisitorGame extends GameEngine {
 
     private static final String FLAG_GAME_OVER = "game_over";
 
+    private static final String FLAG_FOURTH_NIGHT_STARTED = "fourth_night_started";
+    private static final String FLAG_FOURTH_NIGHT_VISITORS_DONE = "fourth_night_visitors_done";
+
+    private static final String FLASH_START_FOURTH_NIGHT = "flash_start_fourth_night";
+
+    private static final String RESULT_COLLECTOR_TAKE_RANDOM = "collector_take_random";
+
+    private static final String MESSAGE_ENDING_WIN = "屋子里已经没有伪人了。你活到了最后。你是胜利者。（空格键重新开始）";
+    private static final String MESSAGE_ENDING_LOSE = "屋子里仍然藏着伪人。夜深之后，你被潜伏的伪人杀死了。游戏结束。（空格键重新开始）";
+
 
 
 
@@ -272,7 +303,7 @@ public class VisitorGame extends GameEngine {
     private static final String SPECIAL_JUDGE_ANSWER_NO = "__judge_answer_no__";
 
     private static final String MESSAGE_SOMEONE_DIED = "闻到一股血腥味......好像有人死了。";
-    private static final String MESSAGE_GAME_OVER = "你死了。游戏结束。";
+    private static final String MESSAGE_GAME_OVER = "伪人破门而入，你被杀死。游戏结束。（空格键重新开始）";
 
 
 
@@ -293,7 +324,20 @@ public class VisitorGame extends GameEngine {
     private static final String INSPECT_COAT_PERSON_TEETH = "coat_person_teeth";
     private static final String INSPECT_COAT_PERSON_HANDS = "coat_person_hands";
 
+    private static final String INSPECT_WIDOW_TEETH = "widow_teeth";
+    private static final String INSPECT_WIDOW_HANDS = "widow_hands";
 
+    private static final String INSPECT_AUNTIE_TEETH = "auntie_teeth";
+    private static final String INSPECT_AUNTIE_HANDS = "auntie_hands";
+
+    private static final String INSPECT_PANIC_GIRL_TEETH = "panic_girl_teeth";
+    private static final String INSPECT_PANIC_GIRL_HANDS = "panic_girl_hands";
+
+
+    private static final int BACK_BUTTON_X = 40;
+    private static final int BACK_BUTTON_Y = 130;
+    private static final int BACK_BUTTON_W = 180;
+    private static final int BACK_BUTTON_H = 95;
 
     private static final int DIALOGUE_BOX_X = 1040;
     private static final int DIALOGUE_BOX_Y = 90;
@@ -319,18 +363,20 @@ public class VisitorGame extends GameEngine {
     @Override
     public void init() {
         initWindow();
-        playIntroVideo();
         initGameState();
         initCollections();
         initManagers();
         initImages();
         initOutsideGuestImageKeys();
         initGuestRoomPlacements();
+        initGuestCorpseRoomPlacements();
         initAudios();
         initGuests();
         initGunFrames();
-        startFirstNight();
 
+        playIntroVideo();
+
+        // 这里不要 startFirstNight()
     }
 
     @Override
@@ -348,10 +394,15 @@ public class VisitorGame extends GameEngine {
         updateGunAnimation();
         updateAudioFades(dt);
         updateKnockLoop();
+        updateToothSpriteAnimation();
     }
 
     @Override
     public void paintComponent() {
+        if (morningTransitionActive) {
+            drawMorningTransitionLayer();
+            return;
+        }
         drawBackgroundLayer();
         drawCharacterLayer();
         drawStaminaLayer();
@@ -366,6 +417,89 @@ public class VisitorGame extends GameEngine {
     }
 
     @Override
+    public void keyPressed(KeyEvent event) {
+
+        if (introVideoPlaying && event.getKeyCode() == KeyEvent.VK_ENTER) {
+            finishIntroVideo();
+            return;
+        }
+
+        if (event.getKeyCode() != KeyEvent.VK_SPACE) {
+            return;
+        }
+
+        if (!hasFlag(FLAG_GAME_OVER)) {
+            return;
+        }
+
+        restartGame();
+    }
+
+    private void restartGame() {
+        stopKnockLoop();
+
+        if (currentBackgroundMusic != null) {
+            stopAudioLoop(currentBackgroundMusic);
+            currentBackgroundMusic = null;
+        }
+
+        if (introMediaPlayer != null) {
+            introMediaPlayer.stop();
+            introMediaPlayer.dispose();
+            introMediaPlayer = null;
+        }
+
+        introVideoPlaying = false;
+        morningTransitionActive = false;
+        currentMorningTransitionImage = null;
+
+        showDialogue = false;
+        activeGuestId = null;
+        activeDialogueIsDay = false;
+        activeDialogueNode = null;
+        activeDialogueLineIndex = 0;
+        pendingDialogueResult = null;
+
+        inspectionActive = false;
+        inspectedGuestId = null;
+        currentInspectionFeature = null;
+        currentInspectionImageKey = null;
+
+        gunConfirmActive = false;
+        gunShootActive = false;
+        gunTargetGuestId = null;
+        forcedPortraitGuestId = null;
+
+        flashBlackActive = false;
+        flashBlackTimer = 0;
+        flashBlackDuration = 0;
+        pendingFlashAction = null;
+
+        flashWhiteActive = false;
+        flashWhiteTimer = 0;
+        flashWhiteDuration = 0;
+        pendingFlashWhiteAction = null;
+
+        message = "";
+
+
+        flags.clear();
+        nightVisitorQueue.clear();
+
+        guestManager = new GuestManager();
+        guestManager.initGuests();
+
+        safeHouseManager = new SafeHouseManager();
+
+        currentStamina = 0;
+        maxStamina = 0;
+
+        clearOutsideGuest();
+
+        startFirstNight();
+    }
+
+    @Override
     public void mouseClicked(MouseEvent event) {
 
         handleMouseClick(event.getX(), event.getY());
@@ -373,6 +507,81 @@ public class VisitorGame extends GameEngine {
 
     private void initWindow() {
         setWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    }
+
+    private void initGuestCorpseRoomPlacements() {
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_FIREFIGHTER,
+                DayRoomType.STORAGE,
+                CHARACTER_TRASH_BAG,
+                1250, 760, 260, 180
+        );
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_TEACHER,
+                DayRoomType.LIVING_ROOM,
+                CHARACTER_TRASH_BAG,
+                1450, 700, 280, 190
+        );
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_COAT_PERSON,
+                DayRoomType.LIVING_ROOM,
+                CHARACTER_COAT_PERSON_CORPSE,
+                360, 580, 300, 430
+        );
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_WIDOW,
+                DayRoomType.LIVING_ROOM,
+                CHARACTER_TRASH_BAG,
+                1100, 600, 260, 180
+        );
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_AUNTIE,
+                DayRoomType.STORAGE,
+                CHARACTER_AUNTIE_CORPSE,
+                100, 400, 360, 480
+        );
+
+        registerGuestCorpseRoomPlacement(
+                GUEST_PANIC_GIRL,
+                DayRoomType.KITCHEN,
+                CHARACTER_TRASH_BAG,
+                1360, 820, 230, 160
+        );
+    }
+
+    private void registerGuestCorpseRoomPlacement(
+            String guestId,
+            DayRoomType room,
+            String imageKey,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
+        String key = makeGuestRoomPlacementKey(guestId, room);
+
+        guestCorpseRoomPlacements.put(
+                key,
+                new GuestRoomPlacement(
+                        guestId,
+                        room,
+                        imageKey,
+                        x,
+                        y,
+                        width,
+                        height
+                )
+        );
+    }
+
+    private GuestRoomPlacement getGuestCorpseRoomPlacement(String guestId, DayRoomType room) {
+        String key = makeGuestRoomPlacementKey(guestId, room);
+        return guestCorpseRoomPlacements.get(key);
     }
 
     private void initDialogueOptionFrames() {
@@ -431,6 +640,24 @@ public class VisitorGame extends GameEngine {
 
     }
 
+    private void initToothSpriteFrames() {
+        toothSpriteSheet = loadImage("assets/images/sprite/tooth_sprite.png");
+        toothSpriteFrames = new Image[TOOTH_SPRITE_FRAME_COUNT];
+
+        for (int i = 0; i < TOOTH_SPRITE_FRAME_COUNT; i++) {
+            int col = i % TOOTH_SPRITE_FRAME_COLS;
+            int row = i / TOOTH_SPRITE_FRAME_COLS;
+
+            toothSpriteFrames[i] = subImage(
+                    toothSpriteSheet,
+                    col * TOOTH_SPRITE_FRAME_W,
+                    row * TOOTH_SPRITE_FRAME_H,
+                    TOOTH_SPRITE_FRAME_W,
+                    TOOTH_SPRITE_FRAME_H
+            );
+        }
+    }
+
     private void initGunFrames() {
         gunIdleSpriteSheet = loadImage("assets/UI/fake_gun_idle.png");
         gunShootSpriteSheet = loadImage("assets/UI/fake_gun_shoots.png");
@@ -472,9 +699,11 @@ public class VisitorGame extends GameEngine {
         flags = new HashSet<String>();
 
         guestRoomPlacements = new HashMap<String, GuestRoomPlacement>();
+        guestCorpseRoomPlacements = new HashMap<String, GuestRoomPlacement>();
 
         nightVisitorQueue = new ArrayList<String>();
         outsideGuestImageKeys = new HashMap<String, String>();
+        morningTransitionImages = new HashMap<Integer, Image>();
     }
 
 
@@ -505,7 +734,7 @@ public class VisitorGame extends GameEngine {
         characterImages.put(CHARACTER_WIDOW_OUTSIDE, loadImage("assets/images/visit/widow_outside.png"));
         characterImages.put(CHARACTER_AUNTIE_OUTSIDE, loadImage("assets/images/visit/auntie_outside.png"));
         characterImages.put(CHARACTER_PANIC_GIRL_OUTSIDE, loadImage("assets/images/visit/panic_girl_outside.png"));
-
+        characterImages.put(CHARACTER_COLLECTOR_OUTSIDE, loadImage("assets/images/visit/collector_outside.png"));
 
 
         characterImages.put(CHARACTER_FIREFIGHTER_DAY, loadImage("assets/images/dayguests/firefighter_day.png"));
@@ -528,6 +757,16 @@ public class VisitorGame extends GameEngine {
         characterImages.put(INSPECT_COAT_PERSON_TEETH, loadImage("assets/images/inspect/coat_person_teeth.png"));
         characterImages.put(INSPECT_COAT_PERSON_HANDS, loadImage("assets/images/inspect/coat_person_hands.png"));
 
+        characterImages.put(INSPECT_WIDOW_TEETH, loadImage("assets/images/inspect/widow_teeth.png"));
+        characterImages.put(INSPECT_WIDOW_HANDS, loadImage("assets/images/inspect/widow_hands.png"));
+
+        characterImages.put(INSPECT_AUNTIE_TEETH, loadImage("assets/images/inspect/auntie_teeth.png"));
+        characterImages.put(INSPECT_AUNTIE_HANDS, loadImage("assets/images/inspect/auntie_hands.png"));
+
+        characterImages.put(INSPECT_PANIC_GIRL_TEETH, loadImage("assets/images/inspect/panic_girl_teeth.png"));
+        characterImages.put(INSPECT_PANIC_GIRL_HANDS, loadImage("assets/images/inspect/panic_girl_hands.png"));
+
+
         characterImages.put(PORTRAIT_NEIGHBOR, loadImage("assets/images/guests/neighbor.png"));
         characterImages.put(PORTRAIT_FIREFIGHTER, loadImage("assets/images/guests/firefighter.png"));
         characterImages.put(PORTRAIT_TEACHER, loadImage("assets/images/guests/teacher.png"));
@@ -536,6 +775,12 @@ public class VisitorGame extends GameEngine {
         characterImages.put(PORTRAIT_AUNTIE, loadImage("assets/images/guests/auntie.png"));
         characterImages.put(PORTRAIT_PANIC_GIRL, loadImage("assets/images/guests/panic_daughter.png"));
 
+        morningTransitionImages.put(1, loadImage("assets/images/background/trans1.png"));
+        morningTransitionImages.put(2, loadImage("assets/images/background/trans2.png"));
+        morningTransitionImages.put(3, loadImage("assets/images/background/trans3.png"));
+
+
+        initToothSpriteFrames();
         initDialogueOptionFrames();
 
 
@@ -553,6 +798,7 @@ public class VisitorGame extends GameEngine {
         outsideGuestImageKeys.put(GUEST_WIDOW, CHARACTER_WIDOW_OUTSIDE);
         outsideGuestImageKeys.put(GUEST_AUNTIE, CHARACTER_AUNTIE_OUTSIDE);
         outsideGuestImageKeys.put(GUEST_PANIC_GIRL, CHARACTER_PANIC_GIRL_OUTSIDE);
+        outsideGuestImageKeys.put(GUEST_COLLECTOR, CHARACTER_COLLECTOR_OUTSIDE);
 
     }
 
@@ -578,7 +824,7 @@ public class VisitorGame extends GameEngine {
                 GUEST_NEIGHBOR,
                 DayRoomType.KITCHEN,
                 CHARACTER_NEIGHBOR_DAY,
-                1180,
+                480,
                 250,
                 420,
                 680
@@ -586,48 +832,48 @@ public class VisitorGame extends GameEngine {
 
         registerGuestRoomPlacement(
                 GUEST_FIREFIGHTER,
-                DayRoomType.LIVING_ROOM,
+                DayRoomType.STORAGE,
                 CHARACTER_FIREFIGHTER_DAY,
-                1050,
+                1250,
+                500,
                 260,
-                380,
-                650
+                500
         );
 
         registerGuestRoomPlacement(
                 GUEST_TEACHER,
-                DayRoomType.STORAGE,
+                DayRoomType.LIVING_ROOM,
                 CHARACTER_TEACHER_DAY,
-                980,
-                260,
+                1400,
+                460,
                 380,
                 650
         );
 
         registerGuestRoomPlacement(
                 GUEST_COAT_PERSON,
-                DayRoomType.KITCHEN,
+                DayRoomType.LIVING_ROOM,
                 CHARACTER_COAT_PERSON_DAY,
-                760,
-                280,
-                380,
-                650
+                400,
+                570,
+                230,
+                500
         );
         registerGuestRoomPlacement(
                 GUEST_WIDOW,
                 DayRoomType.LIVING_ROOM,
                 CHARACTER_WIDOW_DAY,
-                1450,
-                260,
-                320,
-                650
+                1100,
+                300,
+                250,
+                500
         );
 
         registerGuestRoomPlacement(
                 GUEST_AUNTIE,
                 DayRoomType.STORAGE,
                 CHARACTER_AUNTIE_DAY,
-                1420,
+                100,
                 260,
                 320,
                 650
@@ -638,9 +884,9 @@ public class VisitorGame extends GameEngine {
                 DayRoomType.KITCHEN,
                 CHARACTER_PANIC_GIRL_DAY,
                 1380,
-                320,
-                260,
-                560
+                510,
+                180,
+                470
         );
 
     }
@@ -744,8 +990,8 @@ public class VisitorGame extends GameEngine {
         }
 
         if (currentDay == 4) {
-            maxStamina = 6;
-            currentStamina = 6;
+            maxStamina = 4;
+            currentStamina = 4;
             return;
         }
 
@@ -944,6 +1190,10 @@ public class VisitorGame extends GameEngine {
 
         if (inspectImage != null) {
             drawImage(inspectImage, 110, 180);
+
+            if (currentInspectionFeature == InspectionFeatureType.TEETH) {
+                drawToothSpriteOverlay(110-100, 180-40);
+            }
         } else {
             changeColor(white);
             drawText(190, 440, "没有找到对应的检查图片。", "Serif", 36);
@@ -953,45 +1203,50 @@ public class VisitorGame extends GameEngine {
         String title = "检查结果";
 
         if (guest != null) {
-            title = "检查结果：" + guest.getName();
+
         }
 
         changeColor(white);
         drawText(120, 95, title, "Serif", 38);
-        drawText(120, 145, "剩余体力：" + currentStamina + "/" + maxStamina, "Serif", 30);
+
+    }
+
+    private void drawToothSpriteOverlay(int baseX, int baseY) {
+        if (toothSpriteFrames == null) {
+            return;
+        }
+
+        if (toothSpriteFrameIndex < 0 || toothSpriteFrameIndex >= toothSpriteFrames.length) {
+            return;
+        }
+
+        Image frame = toothSpriteFrames[toothSpriteFrameIndex];
+
+        if (frame == null) {
+            return;
+        }
+
+        int x = baseX;
+        int y = baseY;
+
+        drawImage(frame, x, y);
     }
 
 
-    private void drawInspectionButtons() {
-        Rectangle teethRect = getInspectTeethButtonRect();
-        Rectangle handsRect = getInspectHandsButtonRect();
-        Rectangle spareRect = getInspectSpareButtonRect();
-        Rectangle killRect = getInspectKillButtonRect();
-        Rectangle leaveRect = getInspectLeaveButtonRect();
+    private void drawMorningTransitionLayer() {
+        clearBackground(width(), height());
 
-        drawInspectionButton(teethRect, "检查牙齿");
-        drawInspectionButton(handsRect, "检查双手");
+        if (currentMorningTransitionImage == null) {
+            return;
+        }
 
-        changeColor(new Color(255, 255, 255, 20));
-        drawSolidRectangle(spareRect.x, spareRect.y, spareRect.width, spareRect.height);
-        changeColor(new Color(255, 255, 255, 80));
-        drawRectangle(spareRect.x, spareRect.y, spareRect.width, spareRect.height);
-        changeColor(new Color(180, 180, 180, 180));
-        drawText(spareRect.x + 18, spareRect.y + 38, "暂不检查", "Serif", 26);
-
-        drawInspectionButton(killRect, "杀死他");
-        drawInspectionButton(leaveRect, "不杀死他");
-    }
-
-    private void drawInspectionButton(Rectangle rect, String text) {
-        changeColor(new Color(255, 255, 255, 45));
-        drawSolidRectangle(rect.x, rect.y, rect.width, rect.height);
-
-        changeColor(new Color(255, 255, 255, 100));
-        drawRectangle(rect.x, rect.y, rect.width, rect.height);
-
-        changeColor(white);
-        drawText(rect.x + 18, rect.y + 38, text, "Serif", 26);
+        drawImage(
+                currentMorningTransitionImage,
+                0,
+                0,
+                width(),
+                height()
+        );
     }
 
 
@@ -1109,11 +1364,20 @@ public class VisitorGame extends GameEngine {
             return;
         }
 
+        GuestRoomPlacement drawPlacement = placement;
         String imageKey = placement.getImageKey();
 
         if (guest.isDead()) {
+            GuestRoomPlacement corpsePlacement = getGuestCorpseRoomPlacement(guest.getId(), room);
+
+            if (corpsePlacement != null) {
+                drawPlacement = corpsePlacement;
+            }
+
             if (guest.getCorpseImageKey() != null) {
                 imageKey = guest.getCorpseImageKey();
+            } else if (corpsePlacement != null && corpsePlacement.getImageKey() != null) {
+                imageKey = corpsePlacement.getImageKey();
             } else {
                 imageKey = CHARACTER_TRASH_BAG;
             }
@@ -1127,10 +1391,10 @@ public class VisitorGame extends GameEngine {
 
         drawImage(
                 image,
-                placement.getX(),
-                placement.getY(),
-                placement.getWidth(),
-                placement.getHeight()
+                drawPlacement.getX(),
+                drawPlacement.getY(),
+                drawPlacement.getWidth(),
+                drawPlacement.getHeight()
         );
     }
 
@@ -1516,19 +1780,45 @@ public class VisitorGame extends GameEngine {
         if (!debugClickAreas) {
             return;
         }
-
         if (showDialogue || hasMessage() || flashBlackActive || flashWhiteActive || inspectionActive) {
             return;
         }
 
-
         ArrayList<ClickableArea> areas = getActiveClickAreas();
-
-        changeColor(new Color(255, 255, 255, 40));
-
         for (ClickableArea area : areas) {
-            drawSolidRectangle(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+            int cx = area.getX() + area.getWidth() / 2;
+            int cy = area.getY() + area.getHeight() / 2;
+
+            int radius = Math.min(area.getWidth(), area.getHeight()) / 4;
+            if (radius < 20) radius = 20;
+
+
+            changeColor(new Color(200, 200, 200, 80));
+            drawSolidCircle(cx, cy, radius - 2);
         }
+    }
+    private boolean shouldDrawDebugClickArea(ClickableArea area) {
+        String actionId = area.getActionId();
+
+        if (actionId == null) {
+            return false;
+        }
+
+        return isReturnAction(actionId);
+    }
+
+    private boolean isReturnAction(String actionId) {
+        if (ACTION_GO_HALLWAY_DAY.equals(actionId)) {
+            return currentScene == SceneType.KITCHEN_DAY
+                    || currentScene == SceneType.STORAGE_DAY
+                    || currentScene == SceneType.LIVING_ROOM_DAY;
+        }
+
+        if (ACTION_GO_BEDROOM_NIGHT.equals(actionId)) {
+            return true;
+        }
+
+        return false;
     }
 
     private void playBackgroundMusic(AudioClip music) {
@@ -1554,51 +1844,104 @@ public class VisitorGame extends GameEngine {
     private void playIntroVideo() {
         introVideoPlaying = true;
 
-        introVideoPanel = new JFXPanel();
-        introVideoPanel.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        while (mPanel == null) {
+            sleep(10);
+        }
 
-        mPanel.setLayout(null);
-        mPanel.add(introVideoPanel);
-        mPanel.setComponentZOrder(introVideoPanel, 0);
-
-        Platform.runLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                File videoFile = new File("assets/videos/intro.mp4");
-                Media media = new Media(videoFile.toURI().toString());
+                introVideoPanel = new JFXPanel();
+                introVideoPanel.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-                introMediaPlayer = new MediaPlayer(media);
-                MediaView mediaView = new MediaView(introMediaPlayer);
+                mPanel.setLayout(null);
+                mPanel.add(introVideoPanel);
+                mPanel.setComponentZOrder(introVideoPanel, 0);
+                mPanel.revalidate();
+                mPanel.repaint();
 
-                mediaView.setFitWidth(WINDOW_WIDTH);
-                mediaView.setFitHeight(WINDOW_HEIGHT);
-                mediaView.setPreserveRatio(false);
-
-                javafx.scene.Group root = new javafx.scene.Group(mediaView);
-                Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-                introVideoPanel.setScene(scene);
-
-                introMediaPlayer.setOnEndOfMedia(new Runnable() {
+                Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        finishIntroVideo();
+                        try {
+                            File videoFile = new File("assets/videos/intro.mp4");
+
+                            if (!videoFile.exists()) {
+                                System.out.println("Intro video missing: " + videoFile.getAbsolutePath());
+                                finishIntroVideo();
+                                return;
+                            }
+
+                            Media media = new Media(videoFile.toURI().toString());
+
+                            media.setOnError(new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Intro media error: " + media.getError());
+                                    finishIntroVideo();
+                                }
+                            });
+
+                            introMediaPlayer = new MediaPlayer(media);
+
+                            introMediaPlayer.setOnError(new Runnable() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Intro player error: " + introMediaPlayer.getError());
+                                    finishIntroVideo();
+                                }
+                            });
+
+                            MediaView mediaView = new MediaView(introMediaPlayer);
+                            mediaView.setFitWidth(WINDOW_WIDTH);
+                            mediaView.setFitHeight(WINDOW_HEIGHT);
+                            mediaView.setPreserveRatio(false);
+
+                            javafx.scene.Group root = new javafx.scene.Group(mediaView);
+                            Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+                            introVideoPanel.setScene(scene);
+
+                            introMediaPlayer.setOnReady(new Runnable() {
+                                @Override
+                                public void run() {
+                                    introMediaPlayer.play();
+                                }
+                            });
+
+                            introMediaPlayer.setOnEndOfMedia(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finishIntroVideo();
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            finishIntroVideo();
+                        }
                     }
                 });
-
-                introMediaPlayer.play();
             }
         });
     }
 
     private void finishIntroVideo() {
+        if (!introVideoPlaying) {
+            return;
+        }
+
         introVideoPlaying = false;
 
-        if (introMediaPlayer != null) {
-            introMediaPlayer.stop();
-            introMediaPlayer.dispose();
-            introMediaPlayer = null;
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (introMediaPlayer != null) {
+                    introMediaPlayer.stop();
+                    introMediaPlayer.dispose();
+                    introMediaPlayer = null;
+                }
+            }
+        });
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -1606,6 +1949,7 @@ public class VisitorGame extends GameEngine {
                 if (introVideoPanel != null) {
                     mPanel.remove(introVideoPanel);
                     introVideoPanel = null;
+                    mPanel.revalidate();
                     mPanel.repaint();
                 }
 
@@ -1663,6 +2007,40 @@ public class VisitorGame extends GameEngine {
         knockFadeTimer = 0;
     }
 
+    private void updateToothSpriteAnimation() {
+        if (!inspectionActive) {
+            return;
+        }
+
+        if (currentInspectionFeature != InspectionFeatureType.TEETH) {
+            return;
+        }
+
+        if (currentInspectionImageKey == null) {
+            return;
+        }
+
+        if (toothSpriteAnimationFinished) {
+            return;
+        }
+
+        long now = getTime();
+
+        if (lastToothSpriteFrameTime == 0L) {
+            lastToothSpriteFrameTime = now;
+            return;
+        }
+
+        if (now - lastToothSpriteFrameTime >= TOOTH_SPRITE_FRAME_INTERVAL) {
+            toothSpriteFrameIndex++;
+            lastToothSpriteFrameTime = now;
+
+            if (toothSpriteFrameIndex >= TOOTH_SPRITE_FRAME_COUNT - 1) {
+                toothSpriteFrameIndex = TOOTH_SPRITE_FRAME_COUNT - 1;
+                toothSpriteAnimationFinished = true;
+            }
+        }
+    }
     private void updateAudioFades(double dt) {
         if (musicFadeActive && currentBackgroundMusic != null) {
             musicFadeTimer += dt;
@@ -1776,6 +2154,10 @@ public class VisitorGame extends GameEngine {
         if (introVideoPlaying) {
             return;
         }
+        if (morningTransitionActive) {
+            finishMorningTransition();
+            return;
+        }
 
         if (hasFlag(FLAG_GAME_OVER)) {
             return;
@@ -1802,6 +2184,12 @@ public class VisitorGame extends GameEngine {
         }
 
         handleSceneClick(mx, my);
+    }
+    private void finishMorningTransition() {
+        morningTransitionActive = false;
+        currentMorningTransitionImage = null;
+
+        startNextMorning();
     }
 
     private void handleInspectionClick(int mx, int my) {
@@ -1881,6 +2269,12 @@ public class VisitorGame extends GameEngine {
         currentInspectionFeature = featureType;
 
         if (featureType == InspectionFeatureType.TEETH) {
+            toothSpriteFrameIndex = 0;
+            lastToothSpriteFrameTime = 0L;
+            toothSpriteAnimationFinished = false;
+        }
+
+        if (featureType == InspectionFeatureType.TEETH) {
             currentInspectionImageKey = features.getTeethImageKey();
         } else if (featureType == InspectionFeatureType.HANDS) {
             currentInspectionImageKey = features.getHandsImageKey();
@@ -1894,6 +2288,10 @@ public class VisitorGame extends GameEngine {
         activeDialogueLineIndex = 0;
         pendingDialogueResult = null;
         showDialogue = true;
+
+        toothSpriteFrameIndex = 0;
+        lastToothSpriteFrameTime = 0L;
+        toothSpriteAnimationFinished = false;
     }
 
     private void closeInspection() {
@@ -2055,8 +2453,8 @@ public class VisitorGame extends GameEngine {
         }
 
         if (!isStaminaEmpty()) {
-            showMessage("你还不困。先把今天该做的事做完。");
-            return;
+            showMessage("你还不困。但你决定提前睡下。");
+            //return;
         }
 
         if (currentDay == 2) {
@@ -2068,8 +2466,12 @@ public class VisitorGame extends GameEngine {
             startFlashBlack(2.5, FLASH_START_THIRD_NIGHT);
             return;
         }
+        if (currentDay == 4) {
+            startFlashBlack(2.5, FLASH_START_FOURTH_NIGHT);
+            return;
+        }
 
-        showMessage("现在还不能睡。");
+        //showMessage("现在还不能睡。");
     }
 
 
@@ -2193,7 +2595,7 @@ public class VisitorGame extends GameEngine {
         }
 
         if (FLASH_SLEEP_TO_NEXT_MORNING.equals(resultAction)) {
-            startNextMorning();
+            startMorningTransition();
             return;
         }
 
@@ -2210,10 +2612,66 @@ public class VisitorGame extends GameEngine {
         if (FLASH_GAME_OVER_BY_JUDGE.equals(resultAction)) {
             triggerGameOver();
         }
+
+        if (FLASH_START_FOURTH_NIGHT.equals(resultAction)) {
+            startFourthNight();
+            return;
+        }
+
+    }
+    private void startMorningTransition() {
+        currentMorningTransitionImage = morningTransitionImages.get(currentDay);
+
+        if (currentMorningTransitionImage == null) {
+            startNextMorning();
+            return;
+        }
+
+        morningTransitionActive = true;
+
+        closeDialogue();
+        closeInspection();
+        clearMessage();
     }
     private void triggerGameOver() {
         addFlag(FLAG_GAME_OVER);
         showMessage(MESSAGE_GAME_OVER);
+    }
+
+    private void triggerFinalEnding() {
+        clearOutsideGuest();
+        closeDialogue();
+        closeInspection();
+
+        addFlag(FLAG_GAME_OVER);
+
+        if (hasLivingVisitorInsideHouse()) {
+            showMessage(MESSAGE_ENDING_LOSE);
+        } else {
+            showMessage(MESSAGE_ENDING_WIN);
+        }
+    }
+
+    private boolean hasLivingVisitorInsideHouse() {
+        for (Guest guest : guestManager.getAllGuests()) {
+            if (guest == null) {
+                continue;
+            }
+
+            if (!guest.isInsideHouse()) {
+                continue;
+            }
+
+            if (guest.isDead()) {
+                continue;
+            }
+
+            if (guest.isVisitor()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -2278,6 +2736,36 @@ public class VisitorGame extends GameEngine {
         stopKnockLoop();
     }
 
+    private void startFourthNight() {
+        currentDay = 4;
+        currentPhase = GamePhase.NIGHT;
+        currentScene = SceneType.BEDROOM_NIGHT;
+
+        playNightMusicForCurrentDay();
+
+        safeHouseManager.setPlayerRoom(DayRoomType.BEDROOM);
+        safeHouseManager.setCanSleep(false);
+
+        maxStamina = 0;
+        currentStamina = 0;
+
+        clearMessage();
+        closeDialogue();
+        closeInspection();
+
+        addFlag(FLAG_FOURTH_NIGHT_STARTED);
+
+        setupFourthNightVisitors();
+    }
+
+    private void setupFourthNightVisitors() {
+        nightVisitorQueue.clear();
+
+        nightVisitorQueue.add(GUEST_COLLECTOR);
+        nightVisitorQueue.add(GUEST_JUDGE_VISITOR);
+
+        advanceToNextNightVisitor();
+    }
 
     private void startThirdNight() {
         currentDay = 3;
@@ -2313,6 +2801,12 @@ public class VisitorGame extends GameEngine {
             if (currentDay == 3 && currentPhase == GamePhase.NIGHT) {
                 addFlag(FLAG_THIRD_NIGHT_VISITORS_DONE);
             }
+
+            if (currentDay == 4 && currentPhase == GamePhase.NIGHT) {
+                addFlag(FLAG_FOURTH_NIGHT_VISITORS_DONE);
+                triggerFinalEnding();
+            }
+
             return;
         }
 
@@ -2355,14 +2849,33 @@ public class VisitorGame extends GameEngine {
             return;
         }
 
+        if (GUEST_COLLECTOR.equals(outsideGuestId)) {
+            startGuestDialogue(
+                    GUEST_COLLECTOR,
+                    false,
+                    RESULT_COLLECTOR_TAKE_RANDOM
+            );
+            return;
+        }
+
         if (GUEST_JUDGE_VISITOR.equals(outsideGuestId)) {
             playBackgroundMusic(superMusic);
 
-            startGuestDialogue(
-                    GUEST_JUDGE_VISITOR,
-                    false,
-                    RESULT_JUDGE_VISITOR_DECISION
-            );
+            if (currentDay == 4) {
+                startGuestDialogueFromNode(
+                        GUEST_JUDGE_VISITOR,
+                        "fourth_start",
+                        false,
+                        RESULT_JUDGE_VISITOR_DECISION
+                );
+            } else {
+                startGuestDialogue(
+                        GUEST_JUDGE_VISITOR,
+                        false,
+                        RESULT_JUDGE_VISITOR_DECISION
+                );
+            }
+
             return;
         }
 
@@ -2372,6 +2885,8 @@ public class VisitorGame extends GameEngine {
                 null
         );
     }
+
+
 
 
     private void resultDaughterTakeNeighbor() {
@@ -2467,15 +2982,15 @@ public class VisitorGame extends GameEngine {
 
     private DayRoomType getDefaultRoomForNightVisitor(String guestId) {
         if (GUEST_FIREFIGHTER.equals(guestId)) {
-            return DayRoomType.LIVING_ROOM;
-        }
-
-        if (GUEST_TEACHER.equals(guestId)) {
             return DayRoomType.STORAGE;
         }
 
+        if (GUEST_TEACHER.equals(guestId)) {
+            return DayRoomType.LIVING_ROOM;
+        }
+
         if (GUEST_COAT_PERSON.equals(guestId)) {
-            return DayRoomType.KITCHEN;
+            return DayRoomType.LIVING_ROOM;
         }
 
         if (GUEST_WIDOW.equals(guestId)) {
@@ -2509,6 +3024,38 @@ public class VisitorGame extends GameEngine {
             startNode = guest.getDayStartDialogueNode();
         } else {
             startNode = guest.getStartDialogueNode();
+        }
+
+        if (startNode == null) {
+            return;
+        }
+
+        activeGuestId = guestId;
+        activeDialogueIsDay = dayDialogue;
+        activeDialogueNode = startNode;
+        activeDialogueLineIndex = 0;
+        pendingDialogueResult = resultId;
+        showDialogue = true;
+    }
+
+    private void startGuestDialogueFromNode(
+            String guestId,
+            String startNodeId,
+            boolean dayDialogue,
+            String resultId
+    ) {
+        Guest guest = guestManager.getGuest(guestId);
+
+        if (guest == null) {
+            return;
+        }
+
+        DialogueNode startNode;
+
+        if (dayDialogue) {
+            startNode = guest.getDayDialogueNode(startNodeId);
+        } else {
+            startNode = guest.getDialogueNode(startNodeId);
         }
 
         if (startNode == null) {
@@ -2773,7 +3320,7 @@ public class VisitorGame extends GameEngine {
 
     private String getGunConfirmLine(String guestId) {
         if (GUEST_NEIGHBOR.equals(guestId)) {
-            return "你真的觉得我是那种东西吗？";
+            return "早死晚死都是死...让我体面点。";
         }
 
         if (GUEST_FIREFIGHTER.equals(guestId)) {
@@ -2781,23 +3328,23 @@ public class VisitorGame extends GameEngine {
         }
 
         if (GUEST_TEACHER.equals(guestId)) {
-            return "如果你已经决定了，我不会再解释。";
+            return "孩子们...请原谅我...";
         }
 
         if (GUEST_COAT_PERSON.equals(guestId)) {
-            return "你确定吗？开枪之后就没有回头路了。";
+            return "我想我明白为什么我这么冷了。";
         }
 
         if (GUEST_WIDOW.equals(guestId)) {
-            return "我只是想活过今晚。";
+            return "动手。快点。";
         }
 
         if (GUEST_AUNTIE.equals(guestId)) {
-            return "你手别抖。要做就做。";
+            return "孩子！你别让人骗了！";
         }
 
         if (GUEST_PANIC_GIRL.equals(guestId)) {
-            return "不要……求你了。";
+            return "爸爸...妈妈...。";
         }
 
         return "你举起了枪。";
@@ -2810,7 +3357,7 @@ public class VisitorGame extends GameEngine {
             return;
         }
 
-        if (currentDay != 3) {
+        if (currentDay != 3 && currentDay != 4) {
             setInspectionInfoDialogue("现在还不能检查。");
             return;
         }
@@ -2846,8 +3393,15 @@ public class VisitorGame extends GameEngine {
                 getInspectionStartLine(guestId)
         );
 
-        node.addOption(new DialogueOption("检查手部", SPECIAL_INSPECT_HANDS, false));
-        node.addOption(new DialogueOption("检查牙齿", SPECIAL_INSPECT_TEETH, false));
+        if (currentDay == 3) {
+            node.addOption(new DialogueOption("检查牙齿", SPECIAL_INSPECT_TEETH, false));
+        }
+
+        if (currentDay == 4) {
+            node.addOption(new DialogueOption("检查牙齿", SPECIAL_INSPECT_TEETH, false));
+            node.addOption(new DialogueOption("检查双手", SPECIAL_INSPECT_HANDS, false));
+        }
+
         node.addOption(new DialogueOption("先不检查", SPECIAL_INSPECT_SPARE, false));
 
         return node;
@@ -2881,27 +3435,27 @@ public class VisitorGame extends GameEngine {
         }
 
         if (GUEST_FIREFIGHTER.equals(guestId)) {
-            return "可以。快一点，我不想耽误太久。";
+            return "好。*咳嗽*";
         }
 
         if (GUEST_TEACHER.equals(guestId)) {
-            return "我明白，这是为了安全。";
+            return "来吧。我没什么可隐瞒的。";
         }
 
         if (GUEST_COAT_PERSON.equals(guestId)) {
-            return "当然。你想看哪里？";
+            return "你想检查什么？";
         }
 
         if (GUEST_WIDOW.equals(guestId)) {
-            return "如果这样能让你安心，那就检查吧。";
+            return "快点。";
         }
 
         if (GUEST_AUNTIE.equals(guestId)) {
-            return "查吧查吧，别磨蹭。";
+            return "你要查啥？";
         }
 
         if (GUEST_PANIC_GIRL.equals(guestId)) {
-            return "可以……但请你快一点。";
+            return "你想检查什么？";
         }
 
         return "可以。你检查吧。";
@@ -2909,14 +3463,14 @@ public class VisitorGame extends GameEngine {
 
     private String getInspectionDecisionLine(InspectionFeatureType featureType) {
         if (featureType == InspectionFeatureType.HANDS) {
-            return "你检查了他的手部。要怎么处理？";
+            return "";
         }
 
         if (featureType == InspectionFeatureType.TEETH) {
-            return "你检查了他的牙齿。要怎么处理？";
+            return "";
         }
 
-        return "你检查了他的特征。要怎么处理？";
+        return "";
     }
 
 
@@ -2999,6 +3553,55 @@ public class VisitorGame extends GameEngine {
             return;
         }
 
+        if (RESULT_COLLECTOR_TAKE_RANDOM.equals(resultId)) {
+            resultCollectorTakeRandom();
+            return;
+        }
+
+    }
+    private void resultCollectorTakeRandom() {
+        Guest takenGuest = takeRandomLivingGuestInsideHouse();
+
+        clearOutsideGuest();
+        currentScene = SceneType.YARD_NIGHT;
+
+        if (takenGuest != null) {
+            showMessage("他带走了某人。");
+        } else {
+            showMessage("他似乎没有找到可以带走的人。");
+        }
+
+        advanceToNextNightVisitor();
+    }
+
+    private Guest takeRandomLivingGuestInsideHouse() {
+        ArrayList<Guest> candidates = new ArrayList<Guest>();
+
+        for (Guest guest : guestManager.getAllGuests()) {
+            if (guest == null) {
+                continue;
+            }
+
+            if (!guest.isInsideHouse()) {
+                continue;
+            }
+
+            if (guest.isDead()) {
+                continue;
+            }
+
+            candidates.add(guest);
+        }
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        Guest takenGuest = candidates.get(random.nextInt(candidates.size()));
+        takenGuest.setInsideHouse(false);
+        takenGuest.setCurrentRoom(null);
+
+        return takenGuest;
     }
 
     private void handleJudgeVisitorDecision(String resultId) {
@@ -3127,8 +3730,8 @@ public class VisitorGame extends GameEngine {
         if (hasOutsideGuest()) {
             areas.add(new ClickableArea(
                     ACTION_GO_YARD,
-                    1450,
-                    260,
+                    250,
+                    250,
                     300,
                     560
             ));
@@ -3137,7 +3740,7 @@ public class VisitorGame extends GameEngine {
         if (canSleepNow()) {
             areas.add(new ClickableArea(
                     ACTION_SLEEP,
-                    250,
+                    1250,
                     650,
                     760,
                     330
@@ -3197,15 +3800,15 @@ public class VisitorGame extends GameEngine {
     private void collectBedroomDayClickAreas(ArrayList<ClickableArea> areas) {
         areas.add(new ClickableArea(
                 ACTION_GO_HALLWAY_DAY,
-                1450,
-                260,
+                250,
+                250,
                 300,
                 560
         ));
 
         areas.add(new ClickableArea(
                 ACTION_DAY_SLEEP,
-                250,
+                1250,
                 650,
                 760,
                 330
@@ -3234,18 +3837,22 @@ public class VisitorGame extends GameEngine {
 
         areas.add(new ClickableArea(
                 ACTION_GO_BEDROOM_DAY,
-                980,
-                220,
+                BACK_BUTTON_X,
+                BACK_BUTTON_Y,
+                BACK_BUTTON_W,
+                BACK_BUTTON_H
+                /*1200,
                 320,
-                640
+                320,
+                400*/
         ));
 
         areas.add(new ClickableArea(
                 ACTION_GO_STORAGE_DAY,
-                1440,
+                1600,
                 240,
                 320,
-                620
+                720
         ));
     }
 
@@ -3255,10 +3862,10 @@ public class VisitorGame extends GameEngine {
     private void collectKitchenDayClickAreas(ArrayList<ClickableArea> areas) {
         areas.add(new ClickableArea(
                 ACTION_GO_HALLWAY_DAY,
-                60,
-                120,
-                280,
-                760
+                BACK_BUTTON_X,
+                BACK_BUTTON_Y,
+                BACK_BUTTON_W,
+                BACK_BUTTON_H
         ));
 
         collectVisibleGuestClickAreas(areas, DayRoomType.KITCHEN);
@@ -3267,10 +3874,10 @@ public class VisitorGame extends GameEngine {
     private void collectStorageDayClickAreas(ArrayList<ClickableArea> areas) {
         areas.add(new ClickableArea(
                 ACTION_GO_HALLWAY_DAY,
-                60,
-                120,
-                280,
-                760
+                BACK_BUTTON_X,
+                BACK_BUTTON_Y,
+                BACK_BUTTON_W,
+                BACK_BUTTON_H
         ));
 
         collectVisibleGuestClickAreas(areas, DayRoomType.STORAGE);
@@ -3279,10 +3886,10 @@ public class VisitorGame extends GameEngine {
     private void collectLivingRoomDayClickAreas(ArrayList<ClickableArea> areas) {
         areas.add(new ClickableArea(
                 ACTION_GO_HALLWAY_DAY,
-                60,
-                120,
-                280,
-                760
+                BACK_BUTTON_X,
+                BACK_BUTTON_Y,
+                BACK_BUTTON_W,
+                BACK_BUTTON_H
         ));
 
         collectVisibleGuestClickAreas(areas, DayRoomType.LIVING_ROOM);
