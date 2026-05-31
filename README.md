@@ -1,4 +1,3 @@
-
 # No,I'm not a human
 
 > Psychological horror / interactive narrative game
@@ -22,13 +21,25 @@ After an abnormal solar event, "Visitors" appear – creatures that look human b
   - **Win**: After the fourth night, no living Visitor remains in the house.
   - **Lose**: A Visitor kills you, or a Visitor remains alive after the fourth night.
 
+## Difficulty Modes
+
+The game offers two difficulty levels, switchable via a button in the top‑right corner:
+
+| Mode | Features |
+|------|----------|
+| **Easy** | • Interactive highlight circles appear on all clickable objects (doors, characters, bed, etc.)<br>• Press `H` to reveal suspicious traits of guests in the current room (teeth, hands, eyes, ears). |
+| **Hard** | • No highlight circles<br>• No hint system – you must rely on observation alone. |
+
+The **Back button** (visible in kitchen, storage, and living room) always shows a highlight circle regardless of difficulty, helping you return to the hallway.
+
 ## Controls
 
 | Action | Key / Mouse |
 |--------|-------------|
-| Move / Interact | Left‑click on doors, characters, bed |
+| Move / Interact | Left‑click on doors, characters, bed, Back button |
 | Next dialogue line | Click anywhere on the dialogue box |
 | Choose dialogue option | Click the option button |
+| Get inspection hints (Easy mode only) | Press `H` |
 | Skip intro video | Press `Enter` |
 | Restart after game over | Press `Space` |
 
@@ -85,7 +96,9 @@ assets/
 - **Inspection mechanism** – Spend limited stamina to check teeth/hands for evidence.
 - **Gun execution** – When in doubt, aim and shoot (animation + white flash).
 - **Atmospheric audio** – Fading knock sounds, day/night music, gunshot.
-- **Interactive highlights** – All clickable areas show semi‑transparent grey rings.
+- **Interactive highlights** – Clickable areas show semi‑transparent grey rings (Easy mode only, except the Back button which always glows).
+- **Difficulty selection** – Toggle between Easy and Hard at any time via the top‑right button.
+- **H‑key hints (Easy mode)** – Press `H` in a room to see a list of suspicious traits without revealing names.
 - **Intro video** – MP4 video, skippable with `Enter`.
 
 ---
