@@ -1,13 +1,13 @@
 
-# Visitors: The Pretender
+# No,I'm not a human
 
 > Psychological horror / interactive narrative game
 
 ## Game Description
 
-After an abnormal solar event, "Pretenders" appear – creatures that look human but have subtle abnormal features (messy teeth, dirty hands, red eyes, etc.). You live alone in a house. Every night strangers knock on your door, and during the day you can explore rooms and talk to guests who stayed.
+After an abnormal solar event, "Visitors" appear – creatures that look human but have subtle abnormal features (messy teeth, dirty hands, red eyes, etc.). You live alone in a house. Every night strangers knock on your door, and during the day you can explore rooms and talk to guests who stayed.
 
-**Can you tell who is a Pretender?**  
+**Can you tell who is a Visitor?**  
 **Will you pull the trigger to protect yourself?**  
 **Can you survive until the fourth night?**
 
@@ -19,8 +19,8 @@ After an abnormal solar event, "Pretenders" appear – creatures that look human
   - Based on the results, choose "Kill" or "Spare".
 - **Sleep**: Click the bed in the bedroom during the day to sleep and advance to the next night. You can sleep even if stamina is not empty.
 - **Endings**:
-  - **Win**: After the fourth night, no living Pretender remains in the house.
-  - **Lose**: A Pretender kills you, or a Pretender remains alive after the fourth night.
+  - **Win**: After the fourth night, no living Visitor remains in the house.
+  - **Lose**: A Visitor kills you, or a Visitor remains alive after the fourth night.
 
 ## Controls
 
