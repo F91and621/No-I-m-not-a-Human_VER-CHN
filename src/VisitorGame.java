@@ -2119,7 +2119,7 @@ public class VisitorGame extends GameEngine {
 
             if (toothSpriteFrameIndex >= TOOTH_SPRITE_FRAME_COUNT - 1) {
                 toothSpriteFrameIndex = TOOTH_SPRITE_FRAME_COUNT - 1;
-                toothSpriteAnimationFinished = true;[]
+                toothSpriteAnimationFinished = true;
             }
         }
     }
