@@ -168,104 +168,104 @@ public class Guest {
     }
 
     public static Guest createNeighbor() {
-        Guest neighbor = new Guest("neighbor", "邻居");
+        Guest neighbor = new Guest("neighbor", "Neighbor");
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "嘿，好久不见了。最近怎么样？"
+                "Hey, long time no see. How are you?"
         );
 
-        start.addOption(new DialogueOption("凑合。", "A1", false));
-        start.addOption(new DialogueOption("挺好，多谢。", "A2", false));
+        start.addOption(new DialogueOption("I'm okay.", "A1", false));
+        start.addOption(new DialogueOption("Good, thanks.", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
-                "我就不兜圈子了，我姐他们单位发预警了。",
-                "我特地过来看看你。",
-                "要出事。",
-                "我刚给她打完电话。",
-                "他们单位收到天文台通知，说近期太阳活动异常。",
-                "因此凭空出现好多怪人，人不人鬼不鬼的。",
-                "公安局暂定，叫他们“伪人”。",
-                "怪的很，是吧？真希望不是真的......"
+                "I'll get to it. My sister's work sent an alert.",
+                "I came to check on you.",
+                "Something bad is coming.",
+                "I just got off the phone with her.",
+                "They heard from the observatory. Solar activity is weird.",
+                "Now strange people are showing up out of nowhere.",
+                "The police are calling them visitors for now.",
+                "Creepy, right? I hope it is fake..."
         );
-        A1.addOption(new DialogueOption("太阳怎么了？", "B1", false));
-        A1.addOption(new DialogueOption("伪人？", "B2", false));
+        A1.addOption(new DialogueOption("What's wrong with the sun?", "B1", false));
+        A1.addOption(new DialogueOption("Visitors?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "我就不兜圈子了，我姐他们单位发预警了。",
-                "我特地过来看看你。",
-                "要出事。",
-                "我刚给她打完电话。",
-                "他们单位收到天文台通知，说近期太阳活动异常。",
-                "因此凭空出现好多怪人，人不人鬼不鬼的。",
-                "公安局暂定，叫他们“伪人”。",
-                "怪的很，是吧？真希望不是真的......"
+                "I'll get to it. My sister's work sent an alert.",
+                "I came to check on you.",
+                "Something bad is coming.",
+                "I just got off the phone with her.",
+                "They heard from the observatory. Solar activity is weird.",
+                "Now strange people are showing up out of nowhere.",
+                "The police are calling them visitors for now.",
+                "Creepy, right? I hope it is fake..."
         );
-        A2.addOption(new DialogueOption("太阳怎么了？", "B1", false));
-        A2.addOption(new DialogueOption("伪人？", "B2", false));
+        A2.addOption(new DialogueOption("What's wrong with the sun?", "B1", false));
+        A2.addOption(new DialogueOption("Visitors?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "要么是太阳要爆炸，要么是有东西在太阳上爆炸。",
-                "具体不清楚......反正有问题。",
-                "毕竟你也能感觉出来，",
-                "今年夏天比哪一年都热，对吧？",
-                "我建议做好最坏准备。",
+                "Either the sun is blowing up, or something on it is.",
+                "I don't know... but something is wrong.",
+                "You can feel it too.",
+                "This summer is hotter than ever, right?",
+                "Get ready for the worst.",
                 "......",
-                "我姐告诉我，现在一个人在家很危险。",
-                "所以我赶快过来看看你，别出了事。"
+                "My sister said being home alone is dangerous now.",
+                "So I came fast to check on you."
         );
-        B1.addOption(new DialogueOption("好的，多谢。", "B3", false));
-        B1.addOption(new DialogueOption("我能照顾好自己的。", "B4", false));
-        B1.addOption(new DialogueOption("你们家里人现在怎么样？", "B5", false));
+        B1.addOption(new DialogueOption("Okay, thanks.", "B3", false));
+        B1.addOption(new DialogueOption("I can handle myself.", "B4", false));
+        B1.addOption(new DialogueOption("How is your family?", "B5", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "对，暂定叫伪人。",
-                "人不人鬼不鬼的。",
-                "突然就变出来了，是从土里钻出来的？",
-                "听我姐说，他们会试图闯入别人家，",
-                "但也不偷也不抢。",
-                "但这就够邪乎的了。",
-                "我姐告诉我，现在一个人在家很危险。",
-                "所以我赶快过来看看你，别出了事。"
+                "Yeah, visitors, for now.",
+                "They barely look human.",
+                "They just appear. Did they crawl out of the dirt?",
+                "My sister says they try to break into homes,",
+                "but they don't steal or rob.",
+                "Still creepy enough.",
+                "My sister said being home alone is dangerous now.",
+                "So I came fast to check on you."
         );
-        B2.addOption(new DialogueOption("好的，多谢。", "B3", false));
-        B2.addOption(new DialogueOption("我能照顾好自己的。", "B4", false));
-        B2.addOption(new DialogueOption("你们家里人现在怎么样？", "B5", false));
+        B2.addOption(new DialogueOption("Okay, thanks.", "B3", false));
+        B2.addOption(new DialogueOption("I can handle myself.", "B4", false));
+        B2.addOption(new DialogueOption("How is your family?", "B5", false));
 
         DialogueNode B3 = new DialogueNode(
                 "B3",
-                "好，我今天先住在你这里。",
+                "Okay. I'll stay here tonight.",
                 "......",
-                "快睡觉吧。",
-                "据说明天会有新闻，真希望是辟谣的。"
+                "Go to sleep.",
+                "They say there will be news tomorrow. Hope it debunks this."
         );
         B3.addOption(new DialogueOption("......", "decide", true));
 
         DialogueNode B4 = new DialogueNode(
                 "B4",
-                "我相信你能自理。",
-                "但是你不知道现在一个人多危险。",
-                "我就在你这里待一宿，以防万一。",
-                "不用担心我家。",
-                "我弟弟现在住在我们家，没事。",
+                "I know you can take care of yourself.",
+                "But you don't know how dangerous it is alone.",
+                "I'll stay here tonight, just in case.",
+                "Don't worry about my place.",
+                "My brother is staying with us. We're fine.",
                 "......",
-                "快睡觉吧。",
-                "据说明天会有新闻，真希望是辟谣的。"
+                "Go to sleep.",
+                "They say there will be news tomorrow. Hope it debunks this."
         );
         B4.addOption(new DialogueOption("......", "decide", true));
 
         DialogueNode B5 = new DialogueNode(
                 "B5",
-                "不用担心我家。",
-                "我弟弟现在住在我们家，没事。",
-                "我今天先住你这儿吧，以防万一。",
+                "Don't worry about my place.",
+                "My brother is staying with us. We're fine.",
+                "I'll stay here tonight, just in case.",
                 "......",
-                "快睡觉吧。",
-                "据说明天会有新闻，真希望是辟谣的。"
+                "Go to sleep.",
+                "They say there will be news tomorrow. Hope it debunks this."
         );
         B5.addOption(new DialogueOption("......", "decide", true));
 
@@ -282,26 +282,26 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "我天......都是真的......",
-                "那我姐说的都是真的。",
-                "白天别出门了，晚上别一个人在家。"
+                "Damn... it is all real...",
+                "My sister was right.",
+                "Don't go out by day. Don't be alone at night."
         );
-        dayStart.addOption(new DialogueOption("非要让人进我家？", "day_a1", false));
-        dayStart.addOption(new DialogueOption("让别人进我家？", "day_a1", false));
+        dayStart.addOption(new DialogueOption("Let people into my house?", "day_a1", false));
+        dayStart.addOption(new DialogueOption("Bring others in?", "day_a1", false));
 
 
         DialogueNode dayA1 = new DialogueNode(
                 "day_a1",
-                "我知道你喜欢独处，但现在没办法。",
-                "现在外面到底变成什么样，谁心里都没底。",
-                "不过我姐说了，",
-                "如果有人敲门，问你是不是一个人在家，",
-                "你就说家里有人陪着你。",
-                "先忍忍吧。",
-                "是不是热的受不了了？",
-                "来喝啤酒吧，喝了你就想睡觉。"
+                "I know you like being alone, but not now.",
+                "No one knows what it is like out there.",
+                "But my sister said,",
+                "if someone knocks and asks if you're alone,",
+                "say someone is here with you.",
+                "Just hang in there.",
+                "Too hot to stand it?",
+                "Have a beer. It'll help you sleep."
         );
-        dayA1.addOption(new DialogueOption("哎...好吧。", "day_A2", true));
+        dayA1.addOption(new DialogueOption("Ugh... fine.", "day_A2", true));
 
         neighbor.addDayDialogueNode(dayStart);
         neighbor.addDayDialogueNode(dayA1);
@@ -317,71 +317,72 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "哥哥！",
-                "我爸爸在吗？",
-                "你能帮我叫他吗？"
+                "Mister!",
+                "Is my dad here?",
+                "Can you call him for me?"
         );
 
-        start.addOption(new DialogueOption("你爸爸叫什么？", "A1", false));
-        start.addOption(new DialogueOption("跟我说说你爸爸吧。", "A2", false));
+        start.addOption(new DialogueOption("What's your dad's name?", "A1", false));
+        start.addOption(new DialogueOption("Tell me about your dad.", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
-                "你忘了他叫什么了？",
-                "哦——你在测试我，我不是伪人。",
-                "哥哥，你真聪明！",
-                "我也要开始问别人了。"
+                "You forgot his name?",
+                "Oh--you're testing me. I'm not an visitor.",
+                "Mister, you're smart!",
+                "I'll start asking people too."
         );
-        A1.addOption(new DialogueOption("你是怎么过来的？", "B1", false));
-        A1.addOption(new DialogueOption("你害怕伪人吗？", "B2", false));
+        A1.addOption(new DialogueOption("How did you get here?", "B1", false));
+        A1.addOption(new DialogueOption("Are you scared of visitors?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "我怕黑的时候，他就会和我一起玩。",
-                "我爸爸说，什么时候我够勇敢了，什么时候天就亮了。"
+                "When I'm scared of the dark, he plays with me.",
+                "Dad says when I'm brave enough, the sun will come up."
         );
-        A2.addOption(new DialogueOption("你是怎么过来的？", "B1", false));
-        A2.addOption(new DialogueOption("你害怕伪人吗？", "B2", false));
+        A2.addOption(new DialogueOption("How did you get here?", "B1", false));
+        A2.addOption(new DialogueOption("Are you scared of visitors?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "悄悄告诉你，我是偷偷跑出来的！",
-                "现在真奇怪，人们白天睡觉，晚上起床。",
-                "我还是怕黑。",
-                "爸爸说我都该上学了，不该老是怕黑了。"
+                "Secret: I snuck out!",
+                "Everything is weird now. " ,
+                        "People sleep by day and wake at night.",
+                "I'm still scared of the dark.",
+                "Dad says I'm old enough for school, so I shouldn't be."
         );
-        B1.addOption(new DialogueOption("我去叫你爸爸！", "B3", false));
-        B1.addOption(new DialogueOption("你真勇敢！", "B4", false));
+        B1.addOption(new DialogueOption("I'll call your dad!", "B3", false));
+        B1.addOption(new DialogueOption("You're brave!", "B4", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "有一点怕。",
-                "但是如果我能见一见他们，我就不怕了。",
-                "到底什么是伪人呀？",
-                "如果我被同学欺负了，",
-                "那同学也是伪人吗？",
-                "我不知道。",
-                "但是有我爸爸在，我就不怕！"
+                "A little.",
+                "But if I see them, I won't be scared.",
+                "What are visitor, really?",
+                "If a classmate bullies me,",
+                "are they an visitor too?",
+                "I don't know.",
+                "But if Dad is there, I'm not scared!"
         );
-        B2.addOption(new DialogueOption("我去叫你爸爸！", "B3", false));
-        B2.addOption(new DialogueOption("你真勇敢！", "B4", false));
+        B2.addOption(new DialogueOption("I'll call your dad!", "B3", false));
+        B2.addOption(new DialogueOption("You're brave!", "B4", false));
 
         DialogueNode B3 = new DialogueNode(
                 "B3",
-                "谢谢哥哥！",
-                "我想回家了……外边真吓人……",
-                "我要跟我爸爸玩新游戏！",
-                "改天我教你怎么玩。",
-                "再见！"
+                "Thanks, mister!",
+                "I want to go home... It's scary outside...",
+                "I'm going to play a new game with Dad!",
+                "I'll teach you someday.",
+                "Bye!"
         );
-        B3.addOption(new DialogueOption("……", null, true));
+        B3.addOption(new DialogueOption("...", null, true));
 
         DialogueNode B4 = new DialogueNode(
                 "B4",
-                "谢谢……",
-                "我还是有点怕。我想跟我爸爸回家了。"
+                "Thanks...",
+                "I'm still a little scared. I want to go home with Dad."
         );
-        B4.addOption(new DialogueOption("……", null, true));
+        B4.addOption(new DialogueOption("...", null, true));
 
         daughter.addDialogueNode(start);
         daughter.addDialogueNode(A1);
@@ -403,10 +404,10 @@ public class Guest {
         firefighter.setIdentity(GuestIdentity.HUMAN);
 
         firefighter.setFeatures(new GuestFeatures(
-                true,   // 牙齿整齐
-                true,   // 双手干净
-                false,  // 眼睛不红
-                true,   // 耳朵整洁
+                true,   // straight teeth
+                true,   // clean hands
+                false,  // eyes not red
+                true,   // clean ears
                 "firefighter_teeth",
                 "firefighter_hands",
                 "firefighter_eyes",
@@ -416,59 +417,59 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "*咳咳*",
-                "你能让我进去吗，兄弟？",
+                "*cough cough*",
+                "Can you let me in, brother?",
                 ""
         );
 
 
-        start.addOption(new DialogueOption("你是谁？", "A1", false));
-        start.addOption(new DialogueOption("你怎么了？", "A2", false));
+        start.addOption(new DialogueOption("Who are you?", "A1", false));
+        start.addOption(new DialogueOption("What happened to you?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                       "我是*咳*消防员。",
-                       "今天我们扑灭山火时，",
-                       "我们站在太阳底下。",
-                       "浓烟帮我们避免了被完全烧死，",
-                       "但*咳*，情况依然很糟糕。",
-                       "我从没见过这样的。",
-                       "全是死鸟死动物..."
+                       "I'm a *cough* firefighter.",
+                       "We were fighting a forest fire today.",
+                       "We stood under the sun.",
+                       "The smoke kept us from burning up completely,",
+                       "but *cough* it was still bad.",
+                       "I've never seen anything like it.",
+                       "Dead birds and animals everywhere..."
 
         );
-        A1.addOption(new DialogueOption("你为什么不在医院？", "B1", false));
-        A1.addOption(new DialogueOption("你打算怎么办？", "B2", false));
+        A1.addOption(new DialogueOption("Why aren't you at a hospital?", "B1", false));
+        A1.addOption(new DialogueOption("What will you do?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                        "我是小队里唯一剩下的。" ,
-                        "剩下的，他们......*咳* 上边就是不让他们走。" ,
-                        "他们永远值班了。"
+                        "I'm the only one left in my crew." ,
+                        "The others... *cough* command wouldn't let them leave." ,
+                        "They're on duty forever now."
         );
-        A2.addOption(new DialogueOption("你为什么不在医院？", "B1", false));
-        A2.addOption(new DialogueOption("你打算怎么办？", "B2", false));
+        A2.addOption(new DialogueOption("Why aren't you at a hospital?", "B1", false));
+        A2.addOption(new DialogueOption("What will you do?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "医院？没有医院了，兄弟。" ,
-                        "一闹伪人，哪还有什么医院。" ,
-                        "现在*咳*，谁也帮不了我了。" ,
-                        "我还不如和战友们一起死在那里。" ,
-                        "毕竟，" ,
-                        "我也没多少时间了。"
+                "Hospital? There is no hospital, brother." ,
+                        "With visitors around, hospitals are gone." ,
+                        "Now *cough* no one can help me." ,
+                        "I should have died there with my crew." ,
+                        "After all," ,
+                        "I don't have much time left."
         );
-        B1.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "我想继续灭火。" ,
-                        "我真希望是我死，不是他们死。" ,
-                        "我现在唯一能做的，也就是靠好心人帮助了。"
+                "I want to keep fighting fires." ,
+                        "I wish I had died, not them." ,
+                        "All I can do now is count on kind people."
         );
-        B2.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         firefighter.addDialogueNode(start);
         firefighter.addDialogueNode(A1);
@@ -482,10 +483,10 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "够热的..."
+                "Hot enough..."
         );
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         firefighter.addDayDialogueNode(dayStart);
         firefighter.dayStartDialogueNodeId = "day_start";
@@ -500,10 +501,10 @@ public class Guest {
         teacher.setIdentity(GuestIdentity.HUMAN);
 
         teacher.setFeatures(new GuestFeatures(
-                true,   // 牙齿整齐
-                true,   // 双手干净
-                false,  // 眼睛不红
-                true,   // 耳朵整洁
+                true,   // straight teeth
+                true,   // clean hands
+                false,  // eyes not red
+                true,   // clean ears
                 "teacher_teeth",
                 "teacher_hands",
                 "teacher_eyes",
@@ -512,66 +513,66 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "打扰了...你有空吗？" ,
-                "我能和你谈谈吗？"
+                "Sorry... do you have a minute?" ,
+                "Can I talk to you?"
         );
 
 
-        start.addOption(new DialogueOption("发生了什么？", "A1", false));
-        start.addOption(new DialogueOption("你是谁？", "A2", false));
+        start.addOption(new DialogueOption("What happened?", "A1", false));
+        start.addOption(new DialogueOption("Who are you?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                "我只是想给那些孩子们带来一点希望。" ,
-                        "我收留了他们称为“伪人”的孩子。" ,
-                        "我们住在旧厂房里。" ,
-                        "他们只是需要有人照顾他们。去爱他们。",
-                        "我已经尽力了..." ,
-                        "但这还不够...我没能救他们。"
+                "I just wanted to give those kids some hope." ,
+                        "I took in kids they called visitors." ,
+                        "We lived in an old factory." ,
+                        "They only needed care. Love.",
+                        "I tried my best..." ,
+                        "But it wasn't enough... I couldn't save them."
 
         );
-        A1.addOption(new DialogueOption("孩子们发生了什么？", "B1", false));
+        A1.addOption(new DialogueOption("What happened to the kids?", "B1", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "我是个老师...幼儿园老师。" ,
-                        "当世界开始崩溃时，我把那些孩子们也接进来了。" ,
-                        "他们各自因各种原因失去了父母。",
-                        "有些被隔离，有些人被杀。有些..." ,
-                        "有些父母，一旦他们孩子表现出是伪人的迹象,",
-                        "他们就会扔下这个孩子。",
-                        "但现在...他们都走了。没有一个人在大火中幸存..."
+                "I'm a teacher... a kindergarten teacher." ,
+                        "When the world fell apart, I took those kids in." ,
+                        "They had lost their parents for different reasons.",
+                        "Some were quarantined. Some were killed. Some..." ,
+                        "Some parents left their child",
+                        "once the child showed signs of being an visitor.",
+                        "But now... they're all gone. None survived the fire..."
         );
-        A2.addOption(new DialogueOption("为什么会发生火灾？", "B2", false));
+        A2.addOption(new DialogueOption("Why was there a fire?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "他们......" ,
+                "They..." ,
                         "......" ,
-                        "他们全都死了......在火焰中。" ,
-                        "他们都这么做了。他们其实很害怕孩子们可能是伪人。" ,
-                        "他们强迫我看......他们先锁上门，钉死窗户......" ,
-                        "然后他们放火烧了那栋楼。" ,
-                        "我依然能感受到他们，",
-                        "他们那惊恐的小眼睛在注视着我。"
+                        "They all died... in the fire." ,
+                        "They did it. They were scared the kids might be visitors." ,
+                        "They made me watch... locked the doors, nailed the windows..." ,
+                        "Then they set the building on fire." ,
+                        "I can still feel them,",
+                        "their scared little eyes watching me."
         );
-        B1.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "那是......其他镇民。" ,
-                        "他们发现我在收留那些有伪人迹象的孩子。" ,
+                "It was... the other townspeople." ,
+                        "They found out I was sheltering kids with visitor signs." ,
                         "......" ,
-                        "我们变成了什么？",
-                        "一群无情的暴民，对无助的孩子进行评判？" ,
-                        "他们到底..." ,
-                        "做了什么才配得上那样的对待？" ,
-                        "他们把一切都烧了。还强迫我看。"
+                        "What have we become?",
+                        "A cruel mob judging helpless kids?" ,
+                        "What did they..." ,
+                        "do to deserve that?" ,
+                        "They burned it all. They made me watch."
         );
-        B2.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         teacher.addDialogueNode(start);
         teacher.addDialogueNode(A1);
@@ -584,10 +585,10 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "孩子们......"
+                "The children..."
         );
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         teacher.addDayDialogueNode(dayStart);
         teacher.dayStartDialogueNodeId = "day_start";
@@ -602,10 +603,10 @@ public class Guest {
         coatperson.setIdentity(GuestIdentity.VISITOR);
 
         coatperson.setFeatures(new GuestFeatures(
-                false,  // 牙齿不整齐
-                false,  // 双手不干净
-                true,   // 眼睛发红
-                false,  // 耳朵不整洁
+                false,  // crooked teeth
+                false,  // dirty hands
+                true,   // red eyes
+                false,  // dirty ears
                 "coat_person_teeth",
                 "coat_person_hands",
                 "coat_person_eyes",
@@ -615,52 +616,52 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "你好。" ,
-                        "我不热。我只是想找个安静的地方休息。" ,
-                        "你家里安静吗？",
+                "Hello." ,
+                        "I'm not hot. I just want a quiet place to rest." ,
+                        "Is your house quiet?",
                 ""
         );
-        start.addOption(new DialogueOption("你是谁？", "A1", false));
-        start.addOption(new DialogueOption("你到这地方多久了？", "A2", false));
+        start.addOption(new DialogueOption("Who are you?", "A1", false));
+        start.addOption(new DialogueOption("How long have you been here?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                " 无所谓了。你在想我是不是伪人吗？" ,
-                        "我不是。但我确实有个请求。" ,
-                        "我待会儿问你。我还不确定能不能信任你。"
+                " Doesn't matter. Are you wondering if I'm an visitor?" ,
+                        "I'm not. But I do have a request." ,
+                        "I'll ask later. I'm not sure I can trust you yet."
 
         );
-        A1.addOption(new DialogueOption("你说你不热？", "B1", false));
-        A1.addOption(new DialogueOption("你就不能脱了那个破袄。", "B2", false));
+        A1.addOption(new DialogueOption("You said you're not hot?", "B1", false));
+        A1.addOption(new DialogueOption("Can't you take off that coat?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
                 "..." ,
-                        "很久。"
+                        "A long time."
         );
-        A2.addOption(new DialogueOption("你说你不热？", "B1", false));
-        A2.addOption(new DialogueOption("你就不能脱了那个破袄。", "B2", false));
+        A2.addOption(new DialogueOption("You said you're not hot?", "B1", false));
+        A2.addOption(new DialogueOption("Can't you take off that coat?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "我总是感到很冷。" ,
-                        "我裹着好几层衣服，仍然感觉快冻僵了。" ,
-                        "我害怕脱掉任何外套。" ,
-                        "如果情况变得更糟怎么办？",
-                        "没有死亡来缓解痛苦吗？"
+                "I'm always cold." ,
+                        "I wear layers, but I still feel frozen." ,
+                        "I'm scared to take anything off." ,
+                        "What if it gets worse?",
+                        "Won't death ease the pain?"
         );
-        B1.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "不。我不脱。" ,
-                        "你不必让我进去。" ,
-                        "我走了。我不会求你。我不会再打扰你了。"
+                "No. I won't." ,
+                        "You don't have to let me in." ,
+                        "I'll go. I won't beg. I won't bother you again."
         );
-        B2.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         coatperson.addDialogueNode(start);
         coatperson.addDialogueNode(A1);
@@ -674,12 +675,12 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "早。",
-                "屋里比外面暖和。",
-                "再暖和点就好了..."
+                "Morning.",
+                "It's warmer inside than outside.",
+                "A bit warmer would be nice..."
         );
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         coatperson.addDayDialogueNode(dayStart);
         coatperson.dayStartDialogueNodeId = "day_start";
@@ -699,122 +700,122 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "你好！"
+                "Hello!"
         );
-        start.addOption(new DialogueOption("你想要什么？", "A1", false));
-        start.addOption(new DialogueOption("你别想进来。", "A2", false));
+        start.addOption(new DialogueOption("What do you want?", "A1", false));
+        start.addOption(new DialogueOption("You're not coming in.", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
-                "你这房子挺大。",
-                "我喜欢。"
+                "Your house pretty big.",
+                "I like it."
         );
-        A1.addOption(new DialogueOption("快滚蛋。", "B1", false));
-        A1.addOption(new DialogueOption("我有枪。", "B2", false));
+        A1.addOption(new DialogueOption("Get lost.", "B1", false));
+        A1.addOption(new DialogueOption("I have a gun.", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "你这门结实不？",
-                "你永远不知道明天会发生什么。",
-                "哈哈哈哈。"
+                "Is this door sturdy?",
+                "You never know what tomorrow brings.",
+                "Hahaha."
         );
-        A2.addOption(new DialogueOption("快滚蛋。", "B1", false));
-        A2.addOption(new DialogueOption("我有枪。", "B2", false));
+        A2.addOption(new DialogueOption("Get lost.", "B1", false));
+        A2.addOption(new DialogueOption("I have a gun.", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "哈哈！",
-                "所以......",
-                "你家就你一个人？"
+                "Haha!",
+                "So...",
+                "Are you home alone?"
         );
-        B1.addOption(new DialogueOption("我家有好多人。", "B3", false));
-        B1.addOption(new DialogueOption("就我一个。", "B4", false));
+        B1.addOption(new DialogueOption("Lots of people are here.", "B3", false));
+        B1.addOption(new DialogueOption("Just me.", "B4", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "哈哈！",
-                "所以......",
-                "你家就你一个人？"
+                "Haha!",
+                "So...",
+                "Are you home alone?"
         );
 
 
-        B2.addOption(new DialogueOption("我家有好多人。", "B3", false));
-        B2.addOption(new DialogueOption("就我一个。", "B4", false));
+        B2.addOption(new DialogueOption("Lots of people are here.", "B3", false));
+        B2.addOption(new DialogueOption("Just me.", "B4", false));
 
         DialogueNode B3 = new DialogueNode(
                 "B3",
                 "......",
-                "算你走运。"
+                "Lucky you."
         );
         B3.addOption(new DialogueOption("......","__judge_answer_no__",false));
 
         DialogueNode B4 = new DialogueNode(
                 "B4",
-                "哈哈！",
-                "我知道你一个人。",
-                "我就想看看你会不会撒谎。",
-                "我自己进去。"
+                "Haha!",
+                "I know you're alone.",
+                "I just wanted to see if you'd lie.",
+                "I'll let myself in."
         );
         B4.addOption(new DialogueOption("......","__judge_answer_yes__",false));
 
         DialogueNode fourthStart = new DialogueNode(
                 "fourth_start",
-                "又见面了。",
+                "We meet again.",
                 ".....",
-                "你觉得刚才那个戴面具的怎么样？",
-                "你屋子里的气味变了。",
-                "有人不见了，也有人留下来了。"
+                "What did you think of that masked one?",
+                "The smell in your house changed.",
+                "Someone is gone, and someone stayed."
         );
-        fourthStart.addOption(new DialogueOption("你又想确认什么？", "fourth_A1", false));
-        fourthStart.addOption(new DialogueOption("你怎么又回来了？", "fourth_A2", false));
+        fourthStart.addOption(new DialogueOption("What are you checking now?", "fourth_A1", false));
+        fourthStart.addOption(new DialogueOption("Why are you back?", "fourth_A2", false));
 
         DialogueNode fourthA1 = new DialogueNode(
                 "fourth_A1",
-                "哈哈哈哈哈！",
-                "那你又到底能做些什么？",
-                "你能抵挡死亡吗？",
-                "你能阻止洪水吗？",
-                "你能阻止火灾？",
-                "你唯一能阻止的，",
-                "就是你的心跳。",
-                "好了......",
-                "你家就你一个人？"
+                "Hahahaha!",
+                "What can you really do?",
+                "Can you stop death?",
+                "Can you stop a flood?",
+                "Can you stop a fire?",
+                "The only thing you can stop,",
+                "is your heartbeat.",
+                "Alright...",
+                "Are you home alone?"
         );
-        fourthA1.addOption(new DialogueOption("我家有好多人。", "fourthA3", false));
-        fourthA1.addOption(new DialogueOption("就我一个。", "fourthA4", false));
+        fourthA1.addOption(new DialogueOption("Lots of people are here.", "fourthA3", false));
+        fourthA1.addOption(new DialogueOption("Just me.", "fourthA4", false));
 
         DialogueNode fourthA2 = new DialogueNode(
                 "fourth_A2",
-                "最近情况很艰难吧。",
-                "还在这个新世界里求生吗？",
-                "为什么？",
-                "你明白我的意思吧？",
-                "美好时光，只在昨日。",
-                "生活已经改变了。",
-                "你现在的节奏很不合适。",
-                "好了......",
-                "你家就你一个人？"
+                "Things have been hard lately, right?",
+                "Still trying to survive in this new world?",
+                "Why?",
+                "You know what I mean.",
+                "The good times were yesterday.",
+                "Life has changed.",
+                "Your pace is all wrong now.",
+                "Alright...",
+                "Are you home alone?"
 
         );
-        fourthA2.addOption(new DialogueOption("我家有好多人。", "fourthA3", false));
-        fourthA2.addOption(new DialogueOption("就我一个。", "fourthA4", false));
+        fourthA2.addOption(new DialogueOption("Lots of people are here.", "fourthA3", false));
+        fourthA2.addOption(new DialogueOption("Just me.", "fourthA4", false));
 
         DialogueNode fourthA3 = new DialogueNode(
                 "fourthA3",
                 "......",
-                "好。",
-                "我们都期待你能撑多久。"
+                "Good.",
+                "We all wonder how long you'll last."
         );
         fourthA3.addOption(new DialogueOption("......","__judge_answer_no__",false));
 
         DialogueNode fourthA4 = new DialogueNode(
                 "fourthA4",
-                "哈哈！",
-                "我知道你一个人。",
-                "最后和谁都不能相处吗？",
-                "真是遗憾。",
-                "那我就快点溜进去吧。",
-                "我有个小礼物要给你。"
+                "Haha!",
+                "I know you're alone.",
+                "Couldn't get along with anyone in the end?",
+                "What a shame.",
+                "Then I'll slip in quickly.",
+                "I have a little gift for you."
         );
         fourthA4.addOption(new DialogueOption("......","__judge_answer_yes__",false));
 
@@ -845,49 +846,49 @@ public class Guest {
         DialogueNode start = new DialogueNode(
                 "start",
                 "..." ,
-                      "我能进去歇歇吗？"
+                      "Can I come in and rest?"
         );
-        start.addOption(new DialogueOption("你从哪来？", "A1", false));
-        start.addOption(new DialogueOption("歇够了你会去哪？", "A2", false));
+        start.addOption(new DialogueOption("Where are you from?", "A1", false));
+        start.addOption(new DialogueOption("Where will you go after?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                "我不知道了。这不重要。",
-                "我太累了。",
-                "如果我不休息，我可能立马会晕倒。"
+                "I don't know anymore. It doesn't matter.",
+                "I'm so tired.",
+                "If I don't rest, I might pass out."
 
         );
-        A1.addOption(new DialogueOption("你的朋友生病了吗？", "B1", false));
-        A1.addOption(new DialogueOption("你的朋友需要帮助吗？", "B2", false));
+        A1.addOption(new DialogueOption("Is your friend sick?", "B1", false));
+        A1.addOption(new DialogueOption("Does your friend need help?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "大概会晕死在哪里，再也起不来。",
-                "我不在乎最终会去哪。",
-                "反正我也快死了。"
+                "Probably pass out somewhere and never get up.",
+                "I don't care where I end up.",
+                "I'm dying anyway."
         );
-        A2.addOption(new DialogueOption("你的朋友生病了吗？", "B1", false));
-        A2.addOption(new DialogueOption("你的朋友需要帮助吗？", "B2", false));
+        A2.addOption(new DialogueOption("Is your friend sick?", "B1", false));
+        A2.addOption(new DialogueOption("Does your friend need help?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "他是我丈夫。" ,
-                        "他死了。" ,
-                        "我不能好好把他埋了。现在扔下他也没意义。"
+                "He is my husband." ,
+                        "He's dead." ,
+                        "I couldn't bury him right. No point leaving him now."
         );
-        B1.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "不用了。",
-                "他需要帮助的时候，没一个人帮他。",
-                "现在他死了。",
-                "也没人在乎他。"
+                "No.",
+                "When he needed help, no one helped.",
+                "Now he's dead.",
+                "And no one cares."
         );
-        B2.addOption(new DialogueOption("请进。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         widow.addDialogueNode(start);
         widow.addDialogueNode(A1);
@@ -901,11 +902,11 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "我需要休息一下......"
+                "I need to rest..."
         );
 
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         widow.addDayDialogueNode(dayStart);
         widow.dayStartDialogueNodeId = "day_start";
@@ -920,51 +921,52 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "哎！" ,
-                "有人没有啊？",
+                "Hey!" ,
+                "Anybody there?",
                 ""
         );
-        start.addOption(new DialogueOption("你是谁？", "A1", false));
-        start.addOption(new DialogueOption("你在找人吗？", "A2", false));
+        start.addOption(new DialogueOption("Who are you?", "A1", false));
+        start.addOption(new DialogueOption("Looking for someone?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                "俺和俺孩们以前就住在这附近的村。" ,
-                        "那些黄衣服王八蛋把俺们赶出了村，但没带俺们走。" ,
-                        "没有收容所，也没有帮助。俺们该去哪儿？该咋办？" ,
-                        "之后大伙都各走各的了。"
+                "Me and my kids used to live in a village nearby." ,
+                        "Those bastards in yellow drove us out, " ,
+                                "but  they didn't take us anywhere." ,
+                        "No shelter, no help. Where are we supposed to go?" ,
+                        "After that, everyone sp]lit up."
 
         );
-        A1.addOption(new DialogueOption("他们为什么把你赶走？", "B1", false));
-        A1.addOption(new DialogueOption("你们有很多人吗？", "B2", false));
+        A1.addOption(new DialogueOption("Why did they drive you out?", "B1", false));
+        A1.addOption(new DialogueOption("Were there many of you?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "俺只想找个地儿歇歇。" ,
-                        "整个村都被清空了，知不道该上哪去。"
+                "I just want somewhere to rest." ,
+                        "The whole village got cleared. Don't know where to go."
         );
-        A2.addOption(new DialogueOption("他们为什么把你赶走？", "B1", false));
-        A2.addOption(new DialogueOption("你们有很多人吗？", "B2", false));
+        A2.addOption(new DialogueOption("Why did they drive you out?", "B1", false));
+        A2.addOption(new DialogueOption("Were there many of you?", "B2", false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "说俺们村被严重的太阳能冲击了，或者什么奇怪的事。" ,
-                        "黄衣服的冲了进来。把人家赶出去。" ,
-                        "还抓了几个人。" ,
-                        "真是一群王八蛋。"
+                "They said our village got hit by some solar blast, or whatever." ,
+                        "The yellow suits rushed in and threw people out." ,
+                        "They grabbed a few people too." ,
+                        "Bunch of bastards."
         );
-        B1.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                        "有的人不走，他们就把这群人抓了出来。" ,
-                        "就跟挑牲口似的。" ,
-                        "现在俺就想活命..."
+                        "Some wouldn't leave, so they dragged them out." ,
+                        "Like picking livestock." ,
+                        "Now I just want to live..."
         );
-        B2.addOption(new DialogueOption("进来吧。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         auntie.addDialogueNode(start);
         auntie.addDialogueNode(A1);
@@ -977,12 +979,12 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "小伙子..." ,
-                        "最好别放其他人进来。"
+                "Young man..." ,
+                        "Better not let anyone else in."
         );
 
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         auntie.addDayDialogueNode(dayStart);
         auntie.dayStartDialogueNodeId = "day_start";
@@ -996,57 +998,57 @@ public class Guest {
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "哥，哥..." ,
-                        "让...让我进去吧。",
+                "Mister, mister..." ,
+                        "Let... let me in.",
                 ""
         );
-        start.addOption(new DialogueOption("怎么这么着急呀？", "A1", false));
-        start.addOption(new DialogueOption("怎么了？", "A2", false));
+        start.addOption(new DialogueOption("Why the rush?", "A1", false));
+        start.addOption(new DialogueOption("What happened?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
 
-                "我不知道该怎么办。" ,
-                        "伪人......" ,
-                        "杀......" ,
-                        "杀了我爸......" ,
-                        "我，我，我......我，我的......" ,
-                        "爸爸。"
+                "I don't know what to do." ,
+                        "Visitor..." ,
+                        "Killed..." ,
+                        "Killed my dad..." ,
+                        "I, I, I... my..." ,
+                        "Dad."
 
         );
-        A1.addOption(new DialogueOption("伪人？", "B1", false));
-        A1.addOption(new DialogueOption("他们为什么这么做？", "B2", false));
+        A1.addOption(new DialogueOption("Visitor?", "B1", false));
+        A1.addOption(new DialogueOption("Why did they do that?", "B2", false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "呃......" ,
-                        "我、我、我爸爸......" ,
-                        "伪人......伪人......" ,
-                        "杀了我爸爸。"
+                "Uh..." ,
+                        "M-m-my dad..." ,
+                        "Visitor... visitor..." ,
+                        "They killed my dad."
         );
-        A2.addOption(new DialogueOption("伪人？", "B1", false));
-        A2.addOption(new DialogueOption("他们为什么这么做？", "B2", false));
+        A2.addOption(new DialogueOption("Visitor?", "B1", false));
+        A2.addOption(new DialogueOption("Why did they do that?", "B2", false));
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "伪人来我们家了。他们和我们坐在一起......" ,
-                        "他们正说话呢。然后他们......杀了他。" ,
-                        "他......*抽泣*我们的......*抽泣*" ,
-                        "我们家还着火了......",
-                        "啊！啊啊啊！爸爸！爸爸！"
+                "Visitor came to our house. They sat with us..." ,
+                        "They were talking. Then they... killed him." ,
+                        "He... *sob* our... *sob*" ,
+                        "Our house was on fire too...",
+                        "Ah! Aaaah! Dad! Dad!"
         );
-        B1.addOption(new DialogueOption("快进来。", "__allow_current_guest__", false));
-        B1.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B1.addOption(new DialogueOption("Come in, quick.", "__allow_current_guest__", false));
+        B1.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         DialogueNode B2 = new DialogueNode(
                 "B2",
-                "我......我不知道。" ,
-                        "爸爸...爸爸就是跟他们说话呢。" ,
-                        "然后他们......然后他们放火烧了房子。" ,
-                        "我...*抽泣*我听见他们笑......",
-                        "啊！啊啊啊！爸爸！爸爸！"
+                "I... I don't know." ,
+                        "Dad... Dad was just talking to them." ,
+                        "Then they... then they set the house on fire." ,
+                        "I... *sob* I heard them laugh...",
+                        "Ah! Aaaah! Dad! Dad!"
         );
-        B2.addOption(new DialogueOption("快进来。", "__allow_current_guest__", false));
-        B2.addOption(new DialogueOption("你最好赶紧走。", "__reject_current_guest__", false));
+        B2.addOption(new DialogueOption("Come in, quick.", "__allow_current_guest__", false));
+        B2.addOption(new DialogueOption("You should leave now.", "__reject_current_guest__", false));
 
         panic_girl.addDialogueNode(start);
         panic_girl.addDialogueNode(A1);
@@ -1059,11 +1061,11 @@ public class Guest {
 
         DialogueNode dayStart = new DialogueNode(
                 "day_start",
-                "爸爸...妈妈..."
+                "Dad... Mom..."
         );
 
-        dayStart.addOption(new DialogueOption("让我检查你。", "__inspect_features__", false));
-        dayStart.addOption(new DialogueOption("先这样。", null, true));
+        dayStart.addOption(new DialogueOption("Let me check you.", "__inspect_features__", false));
+        dayStart.addOption(new DialogueOption("That's all.", null, true));
 
         panic_girl.addDayDialogueNode(dayStart);
         panic_girl.dayStartDialogueNodeId = "day_start";
@@ -1072,42 +1074,42 @@ public class Guest {
     }
 
     public static Guest createCollector() {
-        Guest collector = new Guest("collector", "收集者");
+        Guest collector = new Guest("collector", "Collector");
 
         collector.setIdentity(GuestIdentity.VISITOR);
 
         DialogueNode start = new DialogueNode(
                 "start",
-                "晚上好。",
-                "我们是上头派来的。多余信息不便透露。"
+                "Good evening.",
+                "We were sent by higher-ups. I can't say more."
         );
 
-        start.addOption(new DialogueOption("就你一个？", "A1", false));
-        start.addOption(new DialogueOption("我凭什么相信你？", "A2", false));
+        start.addOption(new DialogueOption("Just you?", "A1", false));
+        start.addOption(new DialogueOption("Why should I trust you?", "A2", false));
 
         DialogueNode A1 = new DialogueNode(
                 "A1",
-                "不，当然不是。",
-                "我们一个小队分散了，以便覆盖更广的区域。",
-                "我不会占你太长时间。"
+                "No, of course not.",
+                "Our team split up to cover more ground.",
+                "I won't take much of your time."
         );
-        A1.addOption(new DialogueOption("你要做什么？","B1",false));
+        A1.addOption(new DialogueOption("What do you want?","B1",false));
 
         DialogueNode A2 = new DialogueNode(
                 "A2",
-                "这是我的证件。你有义务先听我说话。"
+                "Here is my ID. You are required to hear me out."
         );
-        A2.addOption(new DialogueOption("你要做什么？","B1",false));
+        A2.addOption(new DialogueOption("What do you want?","B1",false));
 
         DialogueNode B1 = new DialogueNode(
                 "B1",
-                "我要一个人。",
-                "我们会对他做检查和研究",
-                "确保这个地方的危机能够尽快解决。",
-                "如果他是人类，我们会确保他的安全。",
-                "为了大家的安全，请你考虑清楚。"
+                "I need one person.",
+                "We will examine and study them.",
+                "to resolve this crisis as soon as possible.",
+                "If they are human, we will keep them safe.",
+                "For everyone's safety, think carefully."
         );
-        B1.addOption(new DialogueOption("……", null, true));
+        B1.addOption(new DialogueOption("...", null, true));
         collector.addDialogueNode(start);
         collector.addDialogueNode(A1);
         collector.addDialogueNode(A2);

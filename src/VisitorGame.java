@@ -167,10 +167,17 @@ public class VisitorGame extends GameEngine {
     private ArrayList<String> nightVisitorQueue;
     private HashMap<String, String> outsideGuestImageKeys;
 
-
-
-
+    private enum Difficulty { EASY, HARD }
+    private Difficulty currentDifficulty = Difficulty.EASY;
     private boolean debugClickAreas = true;
+
+    private static final int SETTINGS_BTN_X = WINDOW_WIDTH - 200;
+    private static final int SETTINGS_BTN_Y = 20;
+    private static final int SETTINGS_BTN_W = 180;
+    private static final int SETTINGS_BTN_H = 50;
+
+
+    //private boolean debugClickAreas = true;
 
     private static final String GUEST_NEIGHBOR = "neighbor";
     private static final String GUEST_DAUGHTER = "daughter";
@@ -257,8 +264,8 @@ public class VisitorGame extends GameEngine {
 
     private static final String RESULT_COLLECTOR_TAKE_RANDOM = "collector_take_random";
 
-    private static final String MESSAGE_ENDING_WIN = "屋子里已经没有伪人了。你活到了最后。你是胜利者。（空格键重新开始）";
-    private static final String MESSAGE_ENDING_LOSE = "屋子里仍然藏着伪人。夜深之后，你被潜伏的伪人杀死了。游戏结束。（空格键重新开始）";
+    private static final String MESSAGE_ENDING_WIN = "The house is now clear of Visitors.You have survived until the end.[Press Space to Restart]";
+    private static final String MESSAGE_ENDING_LOSE = "Visitors remain in the house. Deep in the night, a hidden Visitor killed you.";
 
 
 
@@ -302,8 +309,8 @@ public class VisitorGame extends GameEngine {
     private static final String SPECIAL_JUDGE_ANSWER_YES = "__judge_answer_yes__";
     private static final String SPECIAL_JUDGE_ANSWER_NO = "__judge_answer_no__";
 
-    private static final String MESSAGE_SOMEONE_DIED = "闻到一股血腥味......好像有人死了。";
-    private static final String MESSAGE_GAME_OVER = "伪人破门而入，你被杀死。游戏结束。（空格键重新开始）";
+    private static final String MESSAGE_SOMEONE_DIED = "The metallic stench of blood... Someone has been killed.";
+    private static final String MESSAGE_GAME_OVER = "Pale Visitor broken in. You were killed.(SPACE to Restart)";
 
 
 
@@ -376,7 +383,6 @@ public class VisitorGame extends GameEngine {
 
         playIntroVideo();
 
-        // 这里不要 startFirstNight()
     }
 
     @Override
@@ -412,43 +418,111 @@ public class VisitorGame extends GameEngine {
         drawMessageLayer();
         drawGunLayer();
         drawDebugClickAreas();
+
+        drawDifficultyHint();
         drawFlashBlackLayer();
         drawFlashWhiteLayer();
+        drawSettingsButton();
     }
 
     @Override
     public void keyPressed(KeyEvent event) {
-
         if (introVideoPlaying && event.getKeyCode() == KeyEvent.VK_ENTER) {
             finishIntroVideo();
             return;
         }
-
-        if (event.getKeyCode() != KeyEvent.VK_SPACE) {
+        if (event.getKeyCode() == KeyEvent.VK_H && currentDifficulty == Difficulty.EASY && !introVideoPlaying) {
+            showDifficultyHintMessage();
             return;
         }
+        if (event.getKeyCode() != KeyEvent.VK_SPACE) return;
+        if (hasFlag(FLAG_GAME_OVER)) {
+            restartGame();
+        }
+    }
 
-        if (!hasFlag(FLAG_GAME_OVER)) {
+
+    private void toggleDifficulty() {
+        if (currentDifficulty == Difficulty.EASY) {
+            currentDifficulty = Difficulty.HARD;
+            debugClickAreas = false;
+            showMessage("HARD");
+        } else {
+            currentDifficulty = Difficulty.EASY;
+            debugClickAreas = true;
+            showMessage("EASY [H for hints]");
+        }
+    }
+
+    private void drawSettingsButton() {
+        changeColor(Color.RED);
+        int btnX = 1520;
+        int btnY = 20;
+        int btnW = 140;
+        int btnH = 55;
+
+        changeColor(new Color(0, 0, 0, 200));
+        drawSolidRectangle(btnX, btnY, btnW, btnH);
+        changeColor(Color.LIGHT_GRAY);
+        drawRectangle(btnX, btnY, btnW, btnH, 2);
+        changeColor(white);
+        String text = (currentDifficulty == Difficulty.EASY) ? "Easy mode" : "Hard mode";
+        drawText(btnX + 20, btnY + 35, text, "Serif", 24);
+    }
+
+    private void drawDifficultyHint() {
+        if (currentDifficulty != Difficulty.EASY) return;
+        if (showDialogue || hasMessage() || inspectionActive) return;
+
+        int hintX = 1530;
+        int hintY = 20 + 55 ;
+
+        changeColor(new Color(255, 255, 100));
+        drawText(hintX + 15, hintY + 25, "H for hints", "Serif", 18);
+    }
+    private void showDifficultyHintMessage() {
+        if (currentPhase != GamePhase.DAY || currentDay < 3) {
+            showMessage("当前没有可检查的对象（需要第3天或第4天白天）");
             return;
         }
-
-        restartGame();
+        DayRoomType currentRoom = getCurrentDayRoomType();
+        if (currentRoom == null) {
+            showMessage("There's no guest in the room.");
+            return;
+        }
+        List<Guest> guestsInRoom = guestManager.getGuestsInRoom(currentRoom);
+        if (guestsInRoom.isEmpty()) {
+            showMessage("There's no guest in the room.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Hint：");
+        boolean hasSuspicious = false;
+        for (Guest g : guestsInRoom) {
+            if (g.isDead()) continue;
+            GuestFeatures f = g.getFeatures();
+            if (f == null) continue;
+            boolean suspicious = false;
+            if (!f.isTeethNeat()) { suspicious = true; sb.append("\n- 牙齿不整齐"); }
+            if (!f.isHandsClean()) { suspicious = true; sb.append("\n- 双手很脏"); }
+            if (f.isEyesRed()) { suspicious = true; sb.append("\n- 眼睛发红"); }
+            if (!f.isEarsClean()) { suspicious = true; sb.append("\n- 耳朵不整洁"); }
+            if (suspicious) hasSuspicious = true;
+        }
+        if (!hasSuspicious) sb.append(" 当前房间没有发现异常特征");
+        showMessage(sb.toString());
     }
 
     private void restartGame() {
         stopKnockLoop();
-
         if (currentBackgroundMusic != null) {
             stopAudioLoop(currentBackgroundMusic);
             currentBackgroundMusic = null;
         }
-
         if (introMediaPlayer != null) {
             introMediaPlayer.stop();
             introMediaPlayer.dispose();
             introMediaPlayer = null;
         }
-
         introVideoPlaying = false;
         morningTransitionActive = false;
         currentMorningTransitionImage = null;
@@ -482,7 +556,6 @@ public class VisitorGame extends GameEngine {
 
         message = "";
 
-
         flags.clear();
         nightVisitorQueue.clear();
 
@@ -499,10 +572,22 @@ public class VisitorGame extends GameEngine {
         startFirstNight();
     }
 
+
     @Override
     public void mouseClicked(MouseEvent event) {
+        int mx = event.getX();
+        int my = event.getY();
 
-        handleMouseClick(event.getX(), event.getY());
+        int btnX = 1520;
+        int btnY = 20;
+        int btnW = 140;
+        int btnH = 55;
+        if (isInsideRect(mx, my, btnX, btnY, btnW, btnH)) {
+            toggleDifficulty();
+            return;
+        }
+
+        handleMouseClick(mx, my);
     }
 
     private void initWindow() {
@@ -1012,9 +1097,6 @@ public class VisitorGame extends GameEngine {
     }
 
     private void keepAllowedGuestsInHouse() {
-        // 目前先什么都不用写。
-        // 因为 resultAllowNightVisitor() 里已经把允许进入的人设置成 insideHouse=true 了。
-        // 第三天早上他们会根据自己的 currentRoom 自动显示。
     }
 
 
@@ -1200,7 +1282,7 @@ public class VisitorGame extends GameEngine {
         }
 
         Guest guest = guestManager.getGuest(inspectedGuestId);
-        String title = "检查结果";
+        String title = "Check Result";
 
         if (guest != null) {
 
@@ -1289,7 +1371,7 @@ public class VisitorGame extends GameEngine {
         drawSolidRectangle(25, 25, 180, 90);
 
         changeColor(white);
-        drawText(40, 58, "体力", "Serif", 26);
+        drawText(40, 58, "Stamina", "Serif", 26);
 
         for (int i = 0; i < maxStamina; i++) {
             int x = startX + i * (size + gap);
@@ -2037,7 +2119,7 @@ public class VisitorGame extends GameEngine {
 
             if (toothSpriteFrameIndex >= TOOTH_SPRITE_FRAME_COUNT - 1) {
                 toothSpriteFrameIndex = TOOTH_SPRITE_FRAME_COUNT - 1;
-                toothSpriteAnimationFinished = true;
+                toothSpriteAnimationFinished = true;[]
             }
         }
     }
@@ -2122,7 +2204,6 @@ public class VisitorGame extends GameEngine {
 
             control.setValue(volumeDb);
         } catch (Exception e) {
-            // 有些音频设备可能不支持音量控制，直接忽略。
         }
     }
 
@@ -2239,7 +2320,7 @@ public class VisitorGame extends GameEngine {
         }
 
         if (currentStamina <= 0) {
-            setInspectionInfoDialogue("你已经没有体力继续检查了。");
+            setInspectionInfoDialogue("You have no stamina to inspect");
             return;
         }
 
@@ -2252,7 +2333,7 @@ public class VisitorGame extends GameEngine {
         }
 
         if (guest.isDead()) {
-            setInspectionInfoDialogue("他已经死了。");
+            setInspectionInfoDialogue("The person is dead.");
             closeInspection();
             return;
         }
@@ -2260,7 +2341,7 @@ public class VisitorGame extends GameEngine {
         GuestFeatures features = guest.getFeatures();
 
         if (features == null) {
-            setInspectionInfoDialogue("没有可检查的特征。");
+            setInspectionInfoDialogue("There's no features to inspect");
             return;
         }
 
@@ -2453,7 +2534,7 @@ public class VisitorGame extends GameEngine {
         }
 
         if (!isStaminaEmpty()) {
-            showMessage("你还不困。但你决定提前睡下。");
+            showMessage("You decide to sleep though you're not tired.");
             //return;
         }
 
@@ -2470,8 +2551,6 @@ public class VisitorGame extends GameEngine {
             startFlashBlack(2.5, FLASH_START_FOURTH_NIGHT);
             return;
         }
-
-        //showMessage("现在还不能睡。");
     }
 
 
@@ -3283,8 +3362,8 @@ public class VisitorGame extends GameEngine {
                 getGunConfirmLine(inspectedGuestId)
         );
 
-        node.addOption(new DialogueOption("扣动扳机", SPECIAL_PULL_TRIGGER, false));
-        node.addOption(new DialogueOption("放下枪", SPECIAL_LOWER_GUN, false));
+        node.addOption(new DialogueOption("Pull the trigger", SPECIAL_PULL_TRIGGER, false));
+        node.addOption(new DialogueOption("Drop the gun", SPECIAL_LOWER_GUN, false));
 
         return node;
     }
@@ -3320,57 +3399,57 @@ public class VisitorGame extends GameEngine {
 
     private String getGunConfirmLine(String guestId) {
         if (GUEST_NEIGHBOR.equals(guestId)) {
-            return "早死晚死都是死...让我体面点。";
+            return "Guess it's time to die...";
         }
 
         if (GUEST_FIREFIGHTER.equals(guestId)) {
-            return "冷静点。你现在需要的是判断，不是恐惧。";
+            return "Guess it's time to die...";
         }
 
         if (GUEST_TEACHER.equals(guestId)) {
-            return "孩子们...请原谅我...";
+            return "Kids...forgive me...";
         }
 
         if (GUEST_COAT_PERSON.equals(guestId)) {
-            return "我想我明白为什么我这么冷了。";
+            return "I think I 've realized why I feel cold all day.";
         }
 
         if (GUEST_WIDOW.equals(guestId)) {
-            return "动手。快点。";
+            return "Pull the trigger.Hurry.";
         }
 
         if (GUEST_AUNTIE.equals(guestId)) {
-            return "孩子！你别让人骗了！";
+            return "Don’t let other deceive you,Kid!";
         }
 
         if (GUEST_PANIC_GIRL.equals(guestId)) {
-            return "爸爸...妈妈...。";
+            return "Daddy...Mommy...";
         }
 
-        return "你举起了枪。";
+        return "You hold the gun.";
     }
 
 
     private void startInspection(String guestId) {
         if (currentPhase != GamePhase.DAY) {
-            setInspectionInfoDialogue("现在不能检查。");
+            setInspectionInfoDialogue("Can't start inspection now.");
             return;
         }
 
         if (currentDay != 3 && currentDay != 4) {
-            setInspectionInfoDialogue("现在还不能检查。");
+            setInspectionInfoDialogue("Can't start inspection now.");
             return;
         }
 
         Guest guest = guestManager.getGuest(guestId);
 
         if (guest == null) {
-            setInspectionInfoDialogue("没有可检查的对象。");
+            setInspectionInfoDialogue("There's no one to check。");
             return;
         }
 
         if (guest.isDead()) {
-            setInspectionInfoDialogue("他已经死了。");
+            setInspectionInfoDialogue("The person is already dead.");
             return;
         }
 
@@ -3394,15 +3473,15 @@ public class VisitorGame extends GameEngine {
         );
 
         if (currentDay == 3) {
-            node.addOption(new DialogueOption("检查牙齿", SPECIAL_INSPECT_TEETH, false));
+            node.addOption(new DialogueOption("Teeth", SPECIAL_INSPECT_TEETH, false));
         }
 
         if (currentDay == 4) {
-            node.addOption(new DialogueOption("检查牙齿", SPECIAL_INSPECT_TEETH, false));
-            node.addOption(new DialogueOption("检查双手", SPECIAL_INSPECT_HANDS, false));
+            node.addOption(new DialogueOption("Teeth", SPECIAL_INSPECT_TEETH, false));
+            node.addOption(new DialogueOption("Hands", SPECIAL_INSPECT_HANDS, false));
         }
 
-        node.addOption(new DialogueOption("先不检查", SPECIAL_INSPECT_SPARE, false));
+        node.addOption(new DialogueOption("Do it later", SPECIAL_INSPECT_SPARE, false));
 
         return node;
     }
@@ -3413,15 +3492,15 @@ public class VisitorGame extends GameEngine {
                 getInspectionDecisionLine(featureType)
         );
 
-        node.addOption(new DialogueOption("杀死他", SPECIAL_INSPECT_KILL, false));
-        node.addOption(new DialogueOption("不杀死他", SPECIAL_INSPECT_SPARE, false));
+        node.addOption(new DialogueOption("Kill", SPECIAL_INSPECT_KILL, false));
+        node.addOption(new DialogueOption("Spare", SPECIAL_INSPECT_SPARE, false));
 
         return node;
     }
 
     private void setInspectionInfoDialogue(String text) {
         DialogueNode node = new DialogueNode("__inspection_info__", text);
-        node.addOption(new DialogueOption("先这样。", SPECIAL_INSPECT_SPARE, false));
+        node.addOption(new DialogueOption("later。", SPECIAL_INSPECT_SPARE, false));
 
         activeDialogueNode = node;
         activeDialogueLineIndex = 0;
@@ -3435,30 +3514,30 @@ public class VisitorGame extends GameEngine {
         }
 
         if (GUEST_FIREFIGHTER.equals(guestId)) {
-            return "好。*咳嗽*";
+            return "Okay.*Cough*";
         }
 
         if (GUEST_TEACHER.equals(guestId)) {
-            return "来吧。我没什么可隐瞒的。";
+            return "Go ahead.I have nothing to hide. ";
         }
 
         if (GUEST_COAT_PERSON.equals(guestId)) {
-            return "你想检查什么？";
+            return "What do you want to check?";
         }
 
         if (GUEST_WIDOW.equals(guestId)) {
-            return "快点。";
+            return "Hurry.";
         }
 
         if (GUEST_AUNTIE.equals(guestId)) {
-            return "你要查啥？";
+            return "Check for what?";
         }
 
         if (GUEST_PANIC_GIRL.equals(guestId)) {
-            return "你想检查什么？";
+            return "What do you want to check?";
         }
 
-        return "可以。你检查吧。";
+        return "OK.Go ahead.";
     }
 
     private String getInspectionDecisionLine(InspectionFeatureType featureType) {
@@ -3566,9 +3645,9 @@ public class VisitorGame extends GameEngine {
         currentScene = SceneType.YARD_NIGHT;
 
         if (takenGuest != null) {
-            showMessage("他带走了某人。");
+            showMessage("He took someone away.");
         } else {
-            showMessage("他似乎没有找到可以带走的人。");
+            showMessage("He seems to have not found anyone he can take with.");
         }
 
         advanceToNextNightVisitor();
@@ -3841,10 +3920,6 @@ public class VisitorGame extends GameEngine {
                 BACK_BUTTON_Y,
                 BACK_BUTTON_W,
                 BACK_BUTTON_H
-                /*1200,
-                320,
-                320,
-                400*/
         ));
 
         areas.add(new ClickableArea(
